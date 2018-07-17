@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380849253655",
+    "firebase_url": "https://biofreshapp-a8114.firebaseio.com",
+    "project_id": "biofreshapp-a8114",
+    "storage_bucket": "biofreshapp-a8114.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380849253655:android:b5c547970554fc0f",
+        "android_client_info": {
+          "package_name": "com.biofreshapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380849253655-pbep1rqnd04ncdg9549gdd9lghlupga0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.biofreshapp",
+            "certificate_hash": "305e069c718de3ad2537b2b5a0540c2b654876f3"
+          }
+        },
+        {
+          "client_id": "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwoNUbfrSlsjvBKI_MXYS-y3TL_44-Q1E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
