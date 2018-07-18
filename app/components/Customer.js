@@ -12,7 +12,7 @@ const instructions = Platform.select({
 });
 
 
-export  class Customer extends Component {
+export class Customer extends Component {
   constructor() {
 
     super();
@@ -41,9 +41,9 @@ export  class Customer extends Component {
   }
   render() {
     return (
-      
+
       <View style={{ flex: 1, }}>
-        
+
         <View style={styles.buttonTabsContainer}>
           <View style={styles.buttonTab}>
             <Button
@@ -61,17 +61,17 @@ export  class Customer extends Component {
           </View>
 
         </View>
-      
+
         <View style={styles.container}>{
           this.state.ExistingCustomerstatus ? <ExistingCustomer /> : null
         }
-       
+
           <View style={styles.container}>{
             this.state.NewCustomerstatus ? <AddNewCustomer /> : null
           }
-          
+
           </View>
-          </View>
+        </View>
 
       </View>
     );

@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     margin: 130,
     marginTop: 0,
     flex: 20,
+    
   },
 
   label: {
