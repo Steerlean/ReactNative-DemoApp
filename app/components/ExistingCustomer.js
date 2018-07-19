@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button,Alert} from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker } from 'react-native';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -9,40 +9,79 @@ const instructions = Platform.select({
 
 
 export class ExistingCustomer extends Component {
-    _onPressButton() {
-        Alert.alert('You have pressed submit button of Existing Customer!!'); 
-       }
+  constructor(props) {
+    super(props);
+    this.state = {
+      PickerValue: '',
+    }
+  }
+  componentDidMount() {
+
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/104Y617YJhdCO69xPFkhHCg6d_9GvS-A7-L4NLZ2V50Q/values/Sheet1!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=range%2Cvalues&key=AIzaSyCMDAhi5KiqRrk6Z78w0uzqU3_yWIxJd2s')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+        this.setState({
+          dataSource: responseJson.values,
+        }, function () {
+
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  _onPressButton() {
+    var data = this.state.PickerValue;
+    if (data == "") {
+      alert("Please Select a name");
+    } else {
+      alert("Selected Name : "+data);
+    }
+  }
   render() {
     return (
-     
-        <View style={styles.container}>
 
-          <Text styles={styles.header}>EXISTING CUSTOMER</Text>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Name</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Name"></TextInput></View>
-          </View>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Jars Delivered</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Jars Delivered"></TextInput></View>
-          </View>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Jars Picked</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Jars Picked"></TextInput></View>
-          </View>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Amount Paid</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Amount Paid"></TextInput></View>
-          </View>
-          <View>
-            <Button style={styles.buttonSubmit}
-              onPress={this._onPressButton}
-              title="Submit"
-              color="#841584" />
-              
+      <View style={styles.container}>
+
+        <Text styles={styles.header}>EXISTING CUSTOMER</Text>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Name</Text></View>
+          <View style={styles.textInput}>
+            <Picker
+              // style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}
+              selectedValue={this.state.PickerValue}
+              onValueChange={(itemValue, itemIndex) => this.setState({ PickerValue: itemValue })}
+            >
+            {this.state.dataSource.map((l, i) =>
+             {return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i}  
+             /> })
+            }
+            </Picker>
           </View>
         </View>
-      
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Jars Delivered</Text></View>
+          <View style={styles.textInput}><TextInput placeholder="Jars Delivered"></TextInput></View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Jars Picked</Text></View>
+          <View style={styles.textInput}><TextInput placeholder="Jars Picked"></TextInput></View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Amount Paid</Text></View>
+          <View style={styles.textInput}><TextInput placeholder="Amount Paid"></TextInput></View>
+        </View>
+        <View>
+          <Button style={styles.buttonSubmit}
+            onPress={this._onPressButton}
+            title="Submit"
+            color="#841584" />
+
+        </View>
+      </View>
+
     );
   }
 }
@@ -76,7 +115,7 @@ const styles = StyleSheet.create({
     margin: 130,
     marginTop: 0,
     flex: 20,
-    
+
   },
 
   label: {
@@ -94,7 +133,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignSelf: 'stretch',
   },
-  
+
 
 });
 
