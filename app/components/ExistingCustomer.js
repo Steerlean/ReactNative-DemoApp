@@ -6,17 +6,18 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-
-
 export class ExistingCustomer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      PickerValue: '',
+      PickerValue: 'Select Name',
+      dataSource: ["Select"],
     }
+   
   }
   componentDidMount() {
-
+    
+    
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/104Y617YJhdCO69xPFkhHCg6d_9GvS-A7-L4NLZ2V50Q/values/Sheet1!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=range%2Cvalues&key=AIzaSyCMDAhi5KiqRrk6Z78w0uzqU3_yWIxJd2s')
       .then((response) => response.json())
       .then((responseJson) => {
@@ -33,31 +34,30 @@ export class ExistingCustomer extends Component {
   }
 
   _onPressButton() {
+    console.log(this.state.isShowingText);
     var data = this.state.PickerValue;
     if (data == "") {
       alert("Please Select a name");
     } else {
-      alert("Selected Name : "+data);
+      alert("Selected Name : " + data);
     }
   }
   render() {
+   
     return (
 
       <View style={styles.container}>
 
         <Text styles={styles.header}>EXISTING CUSTOMER</Text>
-        <View style={{ flexDirection: 'row' }}  >
+       <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}>
             <Picker
-              // style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}
               selectedValue={this.state.PickerValue}
-              onValueChange={(itemValue, itemIndex) => this.setState({ PickerValue: itemValue })}
-            >
-            {this.state.dataSource.map((l, i) =>
-             {return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i}  
-             /> })
-            }
+              onValueChange={(itemValue) => this.setState({
+                PickerValue: itemValue
+              })}>
+              {this.state.dataSource.map((l, i) => { return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i} /> })}
             </Picker>
           </View>
         </View>
@@ -73,11 +73,13 @@ export class ExistingCustomer extends Component {
           <View style={styles.label}><Text>Amount Paid</Text></View>
           <View style={styles.textInput}><TextInput placeholder="Amount Paid"></TextInput></View>
         </View>
-        <View>
-          <Button style={styles.buttonSubmit}
+        <View style={{ flexDirection: 'row' }}  >
+
+          <Button
             onPress={this._onPressButton}
             title="Submit"
             color="#841584" />
+
 
         </View>
       </View>
@@ -91,8 +93,8 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 80,
-    justifyContent: 'center',
-    backgroundColor: 'aquamarine',
+    //justifyContent: 'center',
+    //backgroundColor: 'aquamarine',
     paddingLeft: 20,
     paddingRight: 20,
     alignItems: 'center',
@@ -100,7 +102,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    fontSize: 200,
+    fontSize: 800,
     marginBottom: 40,
     marginLeft: 40,
     color: 'black',
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    width: 100,
+    width: 200,
     height: 50,
     borderBottomColor: 'darkgrey',
     borderBottomWidth: 1,

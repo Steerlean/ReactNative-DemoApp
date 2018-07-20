@@ -30,13 +30,15 @@ export class AddNewCustomer extends Component {
             <View style={styles.label}><Text>Phone</Text></View>
             <View style={styles.textInput}><TextInput placeholder="PhoneNo"></TextInput></View>
           </View>
-          <View style={styles.buttonSubmit}>
-            <Button
-              onPress={this._onPressButton}
-              title="Submit"
-              color="#841584" />
-              
-          </View>
+          <View style={{ flexDirection: 'row' }}  >
+        
+        <Button
+          onPress={this._onPressButton}
+          title="Submit"
+          color="#841584" />
+          
+      
+      </View>
         </View>
       
     );
@@ -48,8 +50,8 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 80,
-    justifyContent: 'center',
-    backgroundColor: 'aquamarine',
+    // justifyContent: 'center',
+    // backgroundColor: 'aquamarine',
     paddingLeft: 20,
     paddingRight: 20,
     alignItems: 'center',
@@ -57,7 +59,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    fontSize: 200,
+    fontSize: 800,
     marginBottom: 40,
     marginLeft: 40,
     color: 'black',
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    width: 100,
+    width: 200,
     height: 50,
     borderBottomColor: 'darkgrey',
     borderBottomWidth: 1,

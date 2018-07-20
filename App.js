@@ -3,10 +3,10 @@ import { Button, View, Text,StyleSheet,Alert } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import { Customer } from './app/components/Customer';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
+import { ExistingCustomer } from './app/components/ExistingCustomer';
 class HomeScreen extends React.Component {
     static navigationOptions = {
-        title: 'BIOFRESH',
-       
+       title:'BIOFRESH'
       };
     componentDidMount() {
         GoogleSignin.hasPlayServices({ autoResolve: true })
@@ -20,8 +20,7 @@ class HomeScreen extends React.Component {
             scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
             webClientId: "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
 
-        })
-            .then(() => {
+        }).then(() => {
 
             });
     }
