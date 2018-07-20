@@ -13,6 +13,9 @@ const instructions = Platform.select({
 
 
 export class Customer extends Component {
+  static navigationOptions = {
+    header: null,
+  };
   constructor() {
 
     super();
@@ -40,42 +43,64 @@ export class Customer extends Component {
 
   }
   render() {
-    return (
+        if(this.state.ExistingCustomerstatus){
 
-      <View style={{ flex: 1, }}>
-
-        <View style={styles.buttonTabsContainer}>
+        return(
+          <View style={{ flex: 1, }}>
+          <View style={styles.buttonTabsContainer}>
           <View style={styles.buttonTab}>
-            <Button
+          <Button
               onPress={this.ShowHideTextComponentExistingCustomer}
 
               title="Existing Customer"
               color="deepskyblue" />
           </View>
           <View style={styles.buttonTab}>
-            <Button
+          <Button
               onPress={this.ShowHideTextComponentNewCustomer}
 
               title="New Customer"
               color="deepskyblue" />
           </View>
-
-        </View>
-
-        <View style={styles.container}>{
+          </View>
+          <View style={styles.container}>{
           this.state.ExistingCustomerstatus ? <ExistingCustomer /> : null
         }
+        </View>
+        </View>
+        );
 
+       }else{
+        return(
+          <View style={{ flex: 1, }}>
+          <View style={styles.buttonTabsContainer}>
+          <View style={styles.buttonTab}>
+          <Button
+              onPress={this.ShowHideTextComponentExistingCustomer}
+
+              title="Existing Customer"
+              color="deepskyblue" />
+          </View>
+          <View style={styles.buttonTab}>
+          <Button
+              onPress={this.ShowHideTextComponentNewCustomer}
+
+              title="New Customer"
+              color="deepskyblue" />
+          </View>
+          </View>
           <View style={styles.container}>{
             this.state.NewCustomerstatus ? <AddNewCustomer /> : null
           }
 
           </View>
-        </View>
+          </View>
 
-      </View>
-    );
-  }
+        );
+
+       }
+
+      }
 }
 
 const styles = StyleSheet.create({
