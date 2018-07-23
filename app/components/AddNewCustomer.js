@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button,Alert} from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -9,38 +9,53 @@ const instructions = Platform.select({
 });
 
 export class AddNewCustomer extends Component {
-    _onPressButton() {
-        Alert.alert('You have pressed submit button of New Custonmer!!'); 
-       }
+
+
+  constructor() {
+    super();
+    this.state = {
+      name: '',
+    }
+  }
+
+  _onPressButton() {
+    Alert.alert('You have pressed submit button of New Custonmer!!');
+  }
+
+
   render() {
     return (
-     
-        <View style={styles.container}>
-           
-          <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Name</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Name"></TextInput></View>
+
+      <View style={styles.container}>
+
+        <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Name</Text></View>
+          <View style={styles.textInput}><TextInput
+            placeholder="Name"
+            onChangeText={(text) => this.updateValue(text, 'name')}>
+          </TextInput>
           </View>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Address</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="Address"></TextInput></View>
-          </View>
-          <View style={{ flexDirection: 'row' }}  >
-            <View style={styles.label}><Text>Phone</Text></View>
-            <View style={styles.textInput}><TextInput placeholder="PhoneNo"></TextInput></View>
-          </View>
-          <View style={{ flexDirection: 'row' }}  >
-        
-        <Button
-          onPress={this._onPressButton}
-          title="Submit"
-          color="#841584" />
-          
-      
-      </View>
         </View>
-      
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Address</Text></View>
+          <View style={styles.textInput}><TextInput placeholder="Address"></TextInput></View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Phone</Text></View>
+          <View style={styles.textInput}><TextInput placeholder="PhoneNo"></TextInput></View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+          <Button
+            onPress={this._onPressButton}
+            title="Submit"
+            color="#841584" />
+
+
+        </View>
+      </View>
+
     );
   }
 }
@@ -91,7 +106,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignSelf: 'stretch',
   },
-  
+
 
 });
 

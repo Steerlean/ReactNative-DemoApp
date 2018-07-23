@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "380849253655",
-    "firebase_url": "https://biofreshapp-a8114.firebaseio.com",
-    "project_id": "biofreshapp-a8114",
-    "storage_bucket": "biofreshapp-a8114.appspot.com"
+    "project_number": "5593423861",
+    "firebase_url": "https://biofreshapp-1da28.firebaseio.com",
+    "project_id": "biofreshapp-1da28",
+    "storage_bucket": "biofreshapp-1da28.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:380849253655:android:b5c547970554fc0f",
+        "mobilesdk_app_id": "1:5593423861:android:b5c547970554fc0f",
         "android_client_info": {
           "package_name": "com.biofreshapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "380849253655-pbep1rqnd04ncdg9549gdd9lghlupga0.apps.googleusercontent.com",
+          "client_id": "5593423861-apo0gh3e4kj7p22d1njkjjg7t26u3f1n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.biofreshapp",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com",
+          "client_id": "5593423861-hg1s7arlubu7u75t7ssjqb3oi0rqj1le.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCwoNUbfrSlsjvBKI_MXYS-y3TL_44-Q1E"
+          "current_key": "AIzaSyBFLmw4uk91xwCv0A5iPkl-ayQBeDUx9jM"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com",
+              "client_id": "5593423861-hg1s7arlubu7u75t7ssjqb3oi0rqj1le.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

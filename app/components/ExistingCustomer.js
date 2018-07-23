@@ -10,16 +10,14 @@ export class ExistingCustomer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      PickerValue: 'Select Name',
-      dataSource: ["Select"],
+      PickerValue: "",
+      dataSource: [],
     }
    
   }
   componentDidMount() {
-    
-    
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/104Y617YJhdCO69xPFkhHCg6d_9GvS-A7-L4NLZ2V50Q/values/Sheet1!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=range%2Cvalues&key=AIzaSyCMDAhi5KiqRrk6Z78w0uzqU3_yWIxJd2s')
-      .then((response) => response.json())
+   return fetch('https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Sheet1!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=majorDimension%2Crange%2Cvalues&key=AIzaSyByP26870vPBz2HS_Ea8LrJBTHHnZt4eDM')
+    .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
         this.setState({
@@ -34,9 +32,9 @@ export class ExistingCustomer extends Component {
   }
 
   _onPressButton() {
-    console.log(this.state.isShowingText);
+    console.log(this.state.PickerValue[0]);
     var data = this.state.PickerValue;
-    if (data == "") {
+   if (data == "") {
       alert("Please Select a name");
     } else {
       alert("Selected Name : " + data);
@@ -73,10 +71,11 @@ export class ExistingCustomer extends Component {
           <View style={styles.label}><Text>Amount Paid</Text></View>
           <View style={styles.textInput}><TextInput placeholder="Amount Paid"></TextInput></View>
         </View>
-        <View style={{ flexDirection: 'row' }}  >
+        
+         <View style={{ flexDirection: 'row' }}  >
 
           <Button
-            onPress={this._onPressButton}
+            onPress={this._onPressButton.bind(this)}
             title="Submit"
             color="#841584" />
 

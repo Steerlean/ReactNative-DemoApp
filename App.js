@@ -18,7 +18,7 @@ class HomeScreen extends React.Component {
 
         GoogleSignin.configure({
             scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
-            webClientId: "380849253655-hqcddg90fiek85b7i83lfe4n5nojjt0g.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
+            webClientId: "5593423861-hg1s7arlubu7u75t7ssjqb3oi0rqj1le.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
 
         }).then(() => {
 
