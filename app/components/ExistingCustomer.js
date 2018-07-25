@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity } from 'react-native';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -10,14 +11,43 @@ export class ExistingCustomer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      PickerValue: "",
+      name: 'shraddha',
+      PickerValue: '',
       dataSource: [],
+      jars_delivered: '',
+      jars_picked: '',
+      amount_paid: '',
+      isDateTimePickerVisible: false,
+
     }
-   
+
   }
-  componentDidMount() {
-   return fetch('https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Sheet1!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=majorDimension%2Crange%2Cvalues&key=AIzaSyByP26870vPBz2HS_Ea8LrJBTHHnZt4eDM')
-    .then((response) => response.json())
+updateValue(text, field) {
+    var jars_delivered;
+    var jars_picked;
+    var amount_paid;
+    if (field == 'jars_delivered') {
+      this.setState({
+        jars_delivered: text,
+      })
+
+    } else if (field == 'jars_picked') {
+
+      this.setState({
+        jars_picked: text,
+      })
+    } else if (field == 'amount_paid') {
+
+      this.setState({
+        amount_paid: text,
+      })
+    }
+
+
+  }
+componentDidMount() {
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/CustomerDetails!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=majorDimension%2Crange%2Cvalues&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+      .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
         this.setState({
@@ -32,22 +62,78 @@ export class ExistingCustomer extends Component {
   }
 
   _onPressButton() {
-    console.log(this.state.PickerValue[0]);
-    var data = this.state.PickerValue;
-   if (data == "") {
+    var name = "" + this.state.PickerValue;
+    if (name == "") {
       alert("Please Select a name");
     } else {
-      alert("Selected Name : " + data);
+
+      alert("Selected Name : " + name);
     }
+
+    const newRecord = {
+      majorDimension: 'ROWS',
+      values: [
+        [
+          name,
+          this.state.jars_delivered,
+          this.state.jars_picked,
+          this.state.amount_paid,
+        ]
+      ]
+    };
+
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Delivery!B886%3AB:append?valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(newRecord),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ya29.GlwDBg2AhbUg-NJPVMsXZpW7WNjtYB7icGLnFmW0Nx2p8HxRTWPQkWs5IYH6H6Putna_tCXLtHgpp5kw_R6J7UjLWPA8AIMJZbqRja8cBEVMSW8tS3e1HaVnqmqacA",
+      }
+    })
+      .then(res => res.json())
+      .catch(error => console.error('Error:', error))
+      .then((response) => {
+        alert('Customer updated in sheet successfully!!');
+        console.log('Success:', response);
+      });
+
+
+  };
+
+  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+  _handleDatePicked = () => {
+    this.setState({
+      isDateTimePickerVisible: false
+    })
   }
+  _hideDateTimePicker = () => {
+    isDateTimePickerVisible: false
+  }
+
   render() {
-   
+
     return (
 
       <View style={styles.container}>
 
         <Text styles={styles.header}>EXISTING CUSTOMER</Text>
-       <View style={{ flexDirection: 'row' }}  >
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Date</Text></View>
+          <View style={styles.textInput}>
+            <TouchableOpacity onPress={this._showDateTimePicker}>
+              <Text>Show DatePicker</Text>
+            </TouchableOpacity>
+            <DateTimePicker
+              isVisible={this.state.isDateTimePickerVisible}
+              onConfirm={this._handleDatePicked}
+              onCancel={this._hideDateTimePicker}
+            />
+
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}>
             <Picker
@@ -61,18 +147,24 @@ export class ExistingCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Delivered</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Jars Delivered"></TextInput></View>
+          <View style={styles.textInput}><TextInput placeholder="Jars Delivered"
+            onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
+          </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Picked</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Jars Picked"></TextInput></View>
+          <View style={styles.textInput}><TextInput placeholder="Jars Picked"
+            onChangeText={(text) => this.updateValue(text, 'jars_picked')}>
+          </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Amount Paid</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Amount Paid"></TextInput></View>
+          <View style={styles.textInput}><TextInput placeholder="Amount Paid"
+            onChangeText={(text) => this.updateValue(text, 'amount_paid')}>
+          </TextInput></View>
         </View>
-        
-         <View style={{ flexDirection: 'row' }}  >
+
+        <View style={{ flexDirection: 'row' }}  >
 
           <Button
             onPress={this._onPressButton.bind(this)}
@@ -88,12 +180,8 @@ export class ExistingCustomer extends Component {
 }
 
 const styles = StyleSheet.create({
-
-
   container: {
     flex: 80,
-    //justifyContent: 'center',
-    //backgroundColor: 'aquamarine',
     paddingLeft: 20,
     paddingRight: 20,
     alignItems: 'center',

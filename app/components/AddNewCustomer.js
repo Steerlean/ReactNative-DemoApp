@@ -15,13 +15,63 @@ export class AddNewCustomer extends Component {
     super();
     this.state = {
       name: '',
+      address: '',
+      phoneno: '',
     }
   }
+  updateValue(text, field) {
 
-  _onPressButton() {
-    Alert.alert('You have pressed submit button of New Custonmer!!');
+    var name;
+    var address;
+    var phoneno;
+    if (field == 'name') {
+      this.setState({
+        name: text,
+      })
+     } else if (field == 'address') {
+
+      this.setState({
+        address: text,
+      })
+
+    } else if (field == 'phoneno') {
+
+      this.setState({
+        phoneno: text,
+      })
+    }
+
+
   }
+  _onPressButton() {
+    const newRecord = {
+      majorDimension: 'ROWS',
+      values: [
+        [
+          this.state.name,
+          this.state.phoneno,
+          this.state.address,
+        ]
+      ]
+    };
+    
 
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/CustomerDetails:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(newRecord),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ya29.GlwDBg2AhbUg-NJPVMsXZpW7WNjtYB7icGLnFmW0Nx2p8HxRTWPQkWs5IYH6H6Putna_tCXLtHgpp5kw_R6J7UjLWPA8AIMJZbqRja8cBEVMSW8tS3e1HaVnqmqacA",
+      }
+    })
+      .then(res => res.json())
+      .catch(error => console.error('Error:', error))
+      .then((response) => {
+        alert('New Customer added successfully!!');
+        console.log('Success:', response);
+      });
+  }
 
   render() {
     return (
@@ -39,20 +89,24 @@ export class AddNewCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Address"></TextInput></View>
+          <View style={styles.textInput}><TextInput
+            placeholder="Address"
+            onChangeText={(text) => this.updateValue(text, 'address')}>
+          </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Phone</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="PhoneNo"></TextInput></View>
+          <View style={styles.textInput}><TextInput
+            placeholder="PhoneNo"
+            onChangeText={(text) => this.updateValue(text, 'phoneno')}>
+          </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
 
           <Button
-            onPress={this._onPressButton}
+            onPress={this._onPressButton.bind(this)}
             title="Submit"
             color="#841584" />
-
-
         </View>
       </View>
 
@@ -61,12 +115,8 @@ export class AddNewCustomer extends Component {
 }
 
 const styles = StyleSheet.create({
-
-
   container: {
     flex: 80,
-    // justifyContent: 'center',
-    // backgroundColor: 'aquamarine',
     paddingLeft: 20,
     paddingRight: 20,
     alignItems: 'center',
