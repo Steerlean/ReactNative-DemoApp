@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity } from 'react-native';
-import DateTimePicker from 'react-native-modal-datetime-picker';
+import { DatePickerDialog } from 'react-native-datepicker-dialog'
+import moment from 'moment';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -11,8 +13,8 @@ export class ExistingCustomer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'shraddha',
-      PickerValue: '',
+      DateText: '',
+      DateHolder: null,
       dataSource: [],
       jars_delivered: '',
       jars_picked: '',
@@ -22,7 +24,32 @@ export class ExistingCustomer extends Component {
     }
 
   }
-updateValue(text, field) {
+  DatePickerMainFunctionCall = () => {
+
+    let DateHolder = this.state.DateHolder;
+
+    if (!DateHolder || DateHolder == null) {
+
+      DateHolder = new Date();
+      this.setState({
+        DateHolder: DateHolder
+      });
+    }
+
+     this.refs.DatePickerDialog.open({
+
+      date: DateHolder,
+
+    });
+
+  }
+  onDatePickedFunction = (date) => {
+    this.setState({
+      dobDate: date,
+      DateText: moment(date).format('YYYY-MM-DD')
+    });
+  }
+  updateValue(text, field) {
     var jars_delivered;
     var jars_picked;
     var amount_paid;
@@ -45,7 +72,7 @@ updateValue(text, field) {
 
 
   }
-componentDidMount() {
+  componentDidMount() {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/CustomerDetails!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=majorDimension%2Crange%2Cvalues&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
       .then((response) => response.json())
       .then((responseJson) => {
@@ -62,7 +89,7 @@ componentDidMount() {
   }
 
   _onPressButton() {
-    var name = "" + this.state.PickerValue;
+   var name = "" + this.state.PickerValue;
     if (name == "") {
       alert("Please Select a name");
     } else {
@@ -74,6 +101,7 @@ componentDidMount() {
       majorDimension: 'ROWS',
       values: [
         [
+          this.state.DateText,
           name,
           this.state.jars_delivered,
           this.state.jars_picked,
@@ -82,13 +110,13 @@ componentDidMount() {
       ]
     };
 
-    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Delivery!B886%3AB:append?valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Delivery!A886%3AB:append?valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(newRecord),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ya29.GlwDBg2AhbUg-NJPVMsXZpW7WNjtYB7icGLnFmW0Nx2p8HxRTWPQkWs5IYH6H6Putna_tCXLtHgpp5kw_R6J7UjLWPA8AIMJZbqRja8cBEVMSW8tS3e1HaVnqmqacA",
+        "Authorization": "Bearer ya29.GlwEBlyPbuL2vW2-9mXOZe5Zy9ILftYJIOI3uZ9xOz8Ex7khMTH1_8GCA0yOqO-LajVyPhCyZVgF63KaUB7OiGPUxcNmHMEcVENxbNI_34XahsguBugHYsTHudxilA",
       }
     })
       .then(res => res.json())
@@ -101,17 +129,6 @@ componentDidMount() {
 
   };
 
-  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
-
-  _handleDatePicked = () => {
-    this.setState({
-      isDateTimePickerVisible: false
-    })
-  }
-  _hideDateTimePicker = () => {
-    isDateTimePickerVisible: false
-  }
-
   render() {
 
     return (
@@ -122,14 +139,17 @@ componentDidMount() {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Date</Text></View>
           <View style={styles.textInput}>
-            <TouchableOpacity onPress={this._showDateTimePicker}>
-              <Text>Show DatePicker</Text>
+
+            <TouchableOpacity onPress={this.DatePickerMainFunctionCall.bind(this)} >
+
+              <View style={styles.datePickerBox}>
+
+                <Text style={styles.datePickerText}>{this.state.DateText}</Text>
+
+              </View>
+
             </TouchableOpacity>
-            <DateTimePicker
-              isVisible={this.state.isDateTimePickerVisible}
-              onConfirm={this._handleDatePicked}
-              onCancel={this._hideDateTimePicker}
-            />
+            <DatePickerDialog ref="DatePickerDialog" onDatePicked={this.onDatePickedFunction.bind(this)} />
 
           </View>
         </View>
@@ -221,6 +241,26 @@ const styles = StyleSheet.create({
     borderBottomColor: 'darkgrey',
     borderBottomWidth: 1,
     alignSelf: 'stretch',
+  },
+  datePickerBox: {
+    marginTop: 9,
+    borderColor: '#FF5722',
+    borderWidth: 0.5,
+    padding: 0,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+    height: 38,
+    justifyContent: 'center'
+  },
+
+  datePickerText: {
+    fontSize: 14,
+    marginLeft: 5,
+    borderWidth: 0,
+    color: '#000',
+
   },
 
 

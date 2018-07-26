@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
 import { AddNewCustomer } from './AddNewCustomer';
 import { ExistingCustomer } from './ExistingCustomer';
-
-
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -43,64 +41,65 @@ export class Customer extends Component {
 
   }
   render() {
-        if(this.state.ExistingCustomerstatus){
+    if (this.state.ExistingCustomerstatus) {
 
-        return(
-          <View style={{ flex: 1, }}>
+      return (
+        <View style={{ flex: 1, }}>
           <View style={styles.buttonTabsContainer}>
-          <View style={styles.buttonTab}>
-          <Button
-              onPress={this.ShowHideTextComponentExistingCustomer}
+            <View style={styles.buttonTab}>
 
-              title="Existing Customer"
-              color="deepskyblue" />
-          </View>
-          <View style={styles.buttonTab}>
-          <Button
-              onPress={this.ShowHideTextComponentNewCustomer}
+              <Button
+                onPress={this.ShowHideTextComponentExistingCustomer}
 
-              title="New Customer"
-              color="deepskyblue" />
-          </View>
+                title="Existing Customer"
+                color="deepskyblue" />
+            </View>
+            <View style={styles.buttonTab}>
+              <Button
+                onPress={this.ShowHideTextComponentNewCustomer}
+
+                title="New Customer"
+                color="deepskyblue" />
+            </View>
           </View>
           <View style={styles.container}>{
-          this.state.ExistingCustomerstatus ? <ExistingCustomer /> : null
-        }
+            this.state.ExistingCustomerstatus ? <ExistingCustomer /> : null
+          }
+          </View>
         </View>
-        </View>
-        );
+      );
 
-       }else{
-        return(
-          <View style={{ flex: 1, }}>
+    } else {
+      return (
+        <View style={{ flex: 1, }}>
           <View style={styles.buttonTabsContainer}>
-          <View style={styles.buttonTab}>
-          <Button
-              onPress={this.ShowHideTextComponentExistingCustomer}
+            <View style={styles.buttonTab}>
+              <Button
+                onPress={this.ShowHideTextComponentExistingCustomer}
 
-              title="Existing Customer"
-              color="deepskyblue" />
-          </View>
-          <View style={styles.buttonTab}>
-          <Button
-              onPress={this.ShowHideTextComponentNewCustomer}
+                title="Existing Customer"
+                color="deepskyblue" />
+            </View>
+            <View style={styles.buttonTab}>
+              <Button
+                onPress={this.ShowHideTextComponentNewCustomer}
 
-              title="New Customer"
-              color="deepskyblue" />
-          </View>
+                title="New Customer"
+                color="deepskyblue" />
+            </View>
           </View>
           <View style={styles.container}>{
             this.state.NewCustomerstatus ? <AddNewCustomer /> : null
           }
 
           </View>
-          </View>
+        </View>
 
-        );
+      );
 
-       }
+    }
 
-      }
+  }
 }
 
 const styles = StyleSheet.create({

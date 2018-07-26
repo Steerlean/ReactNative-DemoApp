@@ -40,9 +40,7 @@ export class AddNewCustomer extends Component {
         phoneno: text,
       })
     }
-
-
-  }
+ }
   _onPressButton() {
     const newRecord = {
       majorDimension: 'ROWS',
@@ -62,7 +60,7 @@ export class AddNewCustomer extends Component {
       body: JSON.stringify(newRecord),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ya29.GlwDBg2AhbUg-NJPVMsXZpW7WNjtYB7icGLnFmW0Nx2p8HxRTWPQkWs5IYH6H6Putna_tCXLtHgpp5kw_R6J7UjLWPA8AIMJZbqRja8cBEVMSW8tS3e1HaVnqmqacA",
+        "Authorization": "Bearer ya29.GlwEBlyPbuL2vW2-9mXOZe5Zy9ILftYJIOI3uZ9xOz8Ex7khMTH1_8GCA0yOqO-LajVyPhCyZVgF63KaUB7OiGPUxcNmHMEcVENxbNI_34XahsguBugHYsTHudxilA",
       }
     })
       .then(res => res.json())
