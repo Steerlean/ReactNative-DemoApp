@@ -14,12 +14,13 @@ export class Customer extends Component {
   static navigationOptions = {
     header: null,
   };
-  constructor() {
+  constructor(props) {
 
-    super();
-
+    super(props);
+   
     this.state = {
-
+      UserName:this.props.navigation.state.params.username,
+      AcessToken:this.props.navigation.state.params.accesstoken,
       NewCustomerstatus: false,
       ExistingCustomerstatus: true,
 
@@ -41,6 +42,8 @@ export class Customer extends Component {
 
   }
   render() {
+    
+   
     if (this.state.ExistingCustomerstatus) {
 
       return (
@@ -61,9 +64,14 @@ export class Customer extends Component {
                 title="New Customer"
                 color="deepskyblue" />
             </View>
+
+       
           </View>
           <View style={styles.container}>{
-            this.state.ExistingCustomerstatus ? <ExistingCustomer /> : null
+            this.state.ExistingCustomerstatus ?
+             <ExistingCustomer 
+                       username={this.state.UserName} 
+                       accesstoken={this.state.AcessToken}/> : null
           }
           </View>
         </View>
@@ -89,7 +97,11 @@ export class Customer extends Component {
             </View>
           </View>
           <View style={styles.container}>{
-            this.state.NewCustomerstatus ? <AddNewCustomer /> : null
+            this.state.NewCustomerstatus ? 
+            <AddNewCustomer
+            username={this.state.UserName} 
+            accesstoken={this.state.AcessToken}
+            /> : null
           }
 
           </View>

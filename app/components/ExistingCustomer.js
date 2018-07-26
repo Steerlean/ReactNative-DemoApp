@@ -10,19 +10,19 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 export class ExistingCustomer extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
+      PickerValue: '',
       DateText: '',
       DateHolder: null,
       dataSource: [],
       jars_delivered: '',
       jars_picked: '',
       amount_paid: '',
-      isDateTimePickerVisible: false,
-
+     
     }
-
+    
   }
   DatePickerMainFunctionCall = () => {
 
@@ -73,8 +73,8 @@ export class ExistingCustomer extends Component {
 
   }
   componentDidMount() {
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/CustomerDetails!A2%3AA?valueRenderOption=FORMATTED_VALUE&fields=majorDimension%2Crange%2Cvalues&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
-      .then((response) => response.json())
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!B2%3AB?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+   .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
         this.setState({
@@ -87,6 +87,8 @@ export class ExistingCustomer extends Component {
         console.error(error);
       });
   }
+
+
 
   _onPressButton() {
    var name = "" + this.state.PickerValue;
@@ -101,6 +103,7 @@ export class ExistingCustomer extends Component {
       majorDimension: 'ROWS',
       values: [
         [
+          this.props.username,
           this.state.DateText,
           name,
           this.state.jars_delivered,
@@ -109,14 +112,14 @@ export class ExistingCustomer extends Component {
         ]
       ]
     };
-
-    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/Delivery!A886%3AB:append?valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+   
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(newRecord),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ya29.GlwEBlyPbuL2vW2-9mXOZe5Zy9ILftYJIOI3uZ9xOz8Ex7khMTH1_8GCA0yOqO-LajVyPhCyZVgF63KaUB7OiGPUxcNmHMEcVENxbNI_34XahsguBugHYsTHudxilA",
+        "Authorization": "Bearer "+this.props.accesstoken,
       }
     })
       .then(res => res.json())
@@ -156,13 +159,15 @@ export class ExistingCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}>
-            <Picker
+          <Picker
               selectedValue={this.state.PickerValue}
               onValueChange={(itemValue) => this.setState({
                 PickerValue: itemValue
               })}>
               {this.state.dataSource.map((l, i) => { return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i} /> })}
             </Picker>
+
+
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
@@ -265,6 +270,11 @@ const styles = StyleSheet.create({
 
 
 });
+
+
+
+
+
 
 
 

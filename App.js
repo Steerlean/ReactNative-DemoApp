@@ -27,10 +27,12 @@ class HomeScreen extends React.Component {
   googleLogin() {
 
     GoogleSignin.signIn().then((user) => {
+      var userName=user.name;
+      var accessToken=user.accessToken;
       console.log(user)
       this.setState({ user: user });
       Alert.alert('Hello ' + user.name)
-      this.props.navigation.navigate('Details')
+      this.props.navigation.navigate('Details',{username:userName,accesstoken:accessToken})
 
     })
       .catch((err) => {
@@ -38,6 +40,8 @@ class HomeScreen extends React.Component {
       })
   }
   render() {
+
+   
     return (
       <View style={styles.container}>
 

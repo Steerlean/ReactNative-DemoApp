@@ -11,8 +11,8 @@ const instructions = Platform.select({
 export class AddNewCustomer extends Component {
 
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       name: '',
       address: '',
@@ -46,6 +46,7 @@ export class AddNewCustomer extends Component {
       majorDimension: 'ROWS',
       values: [
         [
+          this.props.username,
           this.state.name,
           this.state.phoneno,
           this.state.address,
@@ -54,13 +55,13 @@ export class AddNewCustomer extends Component {
     };
     
 
-    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1xqigpFw7y0gTuKS1U9txjq7Sgk8qZ-0kIfSfDbx0OV8/values/CustomerDetails:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(newRecord),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ya29.GlwEBlyPbuL2vW2-9mXOZe5Zy9ILftYJIOI3uZ9xOz8Ex7khMTH1_8GCA0yOqO-LajVyPhCyZVgF63KaUB7OiGPUxcNmHMEcVENxbNI_34XahsguBugHYsTHudxilA",
+        "Authorization": "Bearer "+this.props.accesstoken,
       }
     })
       .then(res => res.json())
