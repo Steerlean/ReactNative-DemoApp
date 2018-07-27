@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard } from 'react-native';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
 import moment from 'moment';
 
@@ -14,15 +14,19 @@ export class ExistingCustomer extends Component {
     super();
     this.state = {
       PickerValue: '',
-      DateText: '',
+      DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
       DateHolder: null,
       dataSource: [],
-      jars_delivered: '',
-      jars_picked: '',
-      amount_paid: '',
-     
+      jars_delivered: 0,
+      jars_picked: 0,
+      amount_paid: 0,
+      error_message_name: '',
+      error_message_jars_delivered:'',
+      customer_updated_message:'',
+      
+
     }
-    
+
   }
   DatePickerMainFunctionCall = () => {
 
@@ -36,7 +40,7 @@ export class ExistingCustomer extends Component {
       });
     }
 
-     this.refs.DatePickerDialog.open({
+    this.refs.DatePickerDialog.open({
 
       date: DateHolder,
 
@@ -74,7 +78,7 @@ export class ExistingCustomer extends Component {
   }
   componentDidMount() {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!B2%3AB?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
-   .then((response) => response.json())
+      .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
         this.setState({
@@ -88,49 +92,86 @@ export class ExistingCustomer extends Component {
       });
   }
 
-
-
   _onPressButton() {
-   var name = "" + this.state.PickerValue;
-    if (name == "") {
-      alert("Please Select a name");
-    } else {
+    var name = "" + this.state.PickerValue;
+    var jars_delivered = this.state.jars_delivered;
+    var is_customername_field_empty = false;
+    var is_jars_delivered_field_empty = false;
 
-      alert("Selected Name : " + name);
+    if (name == "" || name == "Select Name") {
+
+      is_customername_field_empty = true;
+    }
+    if (jars_delivered == 0) {
+
+      is_jars_delivered_field_empty = true;
+
     }
 
-    const newRecord = {
-      majorDimension: 'ROWS',
-      values: [
-        [
-          this.props.username,
-          this.state.DateText,
-          name,
-          this.state.jars_delivered,
-          this.state.jars_picked,
-          this.state.amount_paid,
-        ]
-      ]
-    };
-   
-    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(newRecord),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer "+this.props.accesstoken,
-      }
-    })
-      .then(res => res.json())
-      .catch(error => console.error('Error:', error))
-      .then((response) => {
-        alert('Customer updated in sheet successfully!!');
-        console.log('Success:', response);
+    if (is_customername_field_empty) {
+      
+      this.setState({
+        error_message_name:"Please Select a name",
+      });
+      console.log("Please Select a name");
+
+    }else{
+      this.setState({
+        error_message_name:"",
+      });
+      
+    }
+
+    if (is_jars_delivered_field_empty) {
+      console.log("Please Select jars")
+      this.setState({
+        error_message_jars_delivered:"Please Select jars",
       });
 
+    }else{
+      this.setState({
+        error_message_jars_delivered:"",
+      });
+      
+    }
+    if (is_customername_field_empty == false && is_jars_delivered_field_empty == false) {
 
-  };
+      const newRecord = {
+        majorDimension: 'ROWS',
+        values: [
+          [
+            this.props.username,
+            this.state.DateText,
+            name,
+            jars_delivered,
+            this.state.jars_picked,
+            this.state.amount_paid,
+          ]
+        ]
+      };
+
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(newRecord),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.accesstoken,
+        }
+      })
+        .then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then((response) => {
+         this.setState({
+          customer_updated_message:'Customer updated successfully.'
+          });   
+        console.log('Success:', response);
+        });
+
+
+    };
+    Keyboard.dismiss();
+  }
 
   render() {
 
@@ -139,7 +180,10 @@ export class ExistingCustomer extends Component {
       <View style={styles.container}>
 
         <Text styles={styles.header}>EXISTING CUSTOMER</Text>
-        <View style={{ flexDirection: 'row' }}  >
+        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+        <Text style={styles.error_message_Text}>{this.state.error_message_jars_delivered}</Text>
+        
+       <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Date</Text></View>
           <View style={styles.textInput}>
 
@@ -159,33 +203,35 @@ export class ExistingCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}>
-          <Picker
+            <Picker
               selectedValue={this.state.PickerValue}
               onValueChange={(itemValue) => this.setState({
                 PickerValue: itemValue
               })}>
               {this.state.dataSource.map((l, i) => { return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i} /> })}
             </Picker>
-
-
+            <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Delivered</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Jars Delivered"
+          <View style={styles.textInput}><TextInput
             onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
+            {this.state.jars_delivered}
           </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Picked</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Jars Picked"
+          <View style={styles.textInput}><TextInput
             onChangeText={(text) => this.updateValue(text, 'jars_picked')}>
+            {this.state.jars_picked}
           </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Amount Paid</Text></View>
-          <View style={styles.textInput}><TextInput placeholder="Amount Paid"
+          <View style={styles.textInput}><TextInput
             onChangeText={(text) => this.updateValue(text, 'amount_paid')}>
+            {this.state.amount_paid}
           </TextInput></View>
         </View>
 
@@ -198,7 +244,13 @@ export class ExistingCustomer extends Component {
 
 
         </View>
-      </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+         <Text style={styles.success_message_Text}>{this.state.customer_updated_message}</Text>
+
+        </View>
+
+      </View >
 
     );
   }
@@ -267,12 +319,18 @@ const styles = StyleSheet.create({
     color: '#000',
 
   },
+  error_message_Text: {
+    color: 'red',
+  },
+  success_message_Text:{
+     padding:20,
+     color:'green',
+     fontSize:20,
+  }
+
 
 
 });
-
-
-
 
 
 
