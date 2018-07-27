@@ -17,6 +17,10 @@ export class AddNewCustomer extends Component {
       name: '',
       address: '',
       phoneno: '',
+      error_message_name: '',
+      error_message_address: '',
+      error_message_phoneno: '',
+      customer_added_message: '',
     }
   }
   updateValue(text, field) {
@@ -28,7 +32,7 @@ export class AddNewCustomer extends Component {
       this.setState({
         name: text,
       })
-     } else if (field == 'address') {
+    } else if (field == 'address') {
 
       this.setState({
         address: text,
@@ -40,44 +44,111 @@ export class AddNewCustomer extends Component {
         phoneno: text,
       })
     }
- }
-  _onPressButton() {
-    const newRecord = {
-      majorDimension: 'ROWS',
-      values: [
-        [
-          this.props.username,
-          this.state.name,
-          this.state.phoneno,
-          this.state.address,
-        ]
-      ]
-    };
-    
-
-    var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(newRecord),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer "+this.props.accesstoken,
-      }
-    })
-      .then(res => res.json())
-      .catch(error => console.error('Error:', error))
-      .then((response) => {
-        alert('New Customer added successfully!!');
-        console.log('Success:', response);
-      });
   }
+  _onPressButton() {
 
+
+    var name = "" + this.state.name;
+    var address = "" + this.state.address;
+    var phoneno = "" + this.state.phoneno;
+    let reg_ex=/^[0-9]+$/;
+
+    var is_customername_field_empty = false;
+    var is_customeraddress_field_empty = false;
+    var is_customerphoneno_field_empty = false;
+
+    if (name == '') {
+      is_customername_field_empty = true;
+      this.setState({
+        error_message_name: 'Please enter name.',
+      });
+    } else {
+      is_customername_field_empty = false;
+      this.setState({
+        error_message_name: '',
+      });
+    }
+    if (address == '') {
+      is_customeraddress_field_empty = true;
+      this.setState({
+        error_message_address: 'Please enter address',
+      });
+    } else {
+      is_customeraddress_field_empty = false;
+      this.setState({
+        error_message_address: '',
+      });
+    }
+    if (phoneno == '') {
+      is_customerphoneno_field_empty = true;
+      this.setState({
+        error_message_phoneno: 'Please enter valid phoneno',
+      });
+    } else {
+      if(reg_ex.test(phoneno)){
+        is_customerphoneno_field_empty = false;
+        this.setState({
+          error_message_phoneno: '',
+        });
+      }else{
+        is_customerphoneno_field_empty = true;
+        this.setState({
+          error_message_phoneno: 'Please enter valid phoneno',
+        });
+      }
+      
+
+    }
+
+    if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false) {
+      const newRecord = {
+        majorDimension: 'ROWS',
+        values: [
+          [
+            this.props.username,
+            this.state.name,
+            this.state.phoneno,
+            this.state.address,
+          ]
+        ]
+      };
+
+
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(newRecord),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.accesstoken,
+        }
+      })
+        .then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then((response) => {
+          this.setState({
+            customer_added_message: 'Customer added successfully.'
+          });
+
+          console.log('Success:', response);
+          this.setState({
+            name:'',
+            address:'',
+            phoneno:'',
+          });
+        });
+    }
+  }
   render() {
     return (
 
       <View style={styles.container}>
 
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
+
+        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+        <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
+        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}><TextInput
@@ -106,6 +177,11 @@ export class AddNewCustomer extends Component {
             onPress={this._onPressButton.bind(this)}
             title="Submit"
             color="#841584" />
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+          <Text style={styles.success_message_Text}>{this.state.customer_added_message}</Text>
+
         </View>
       </View>
 
@@ -155,6 +231,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignSelf: 'stretch',
   },
+  error_message_Text: {
+    color: 'red',
+  },
+  success_message_Text: {
+    padding: 20,
+    color: 'green',
+    fontSize: 20,
+  }
 
 
 });
