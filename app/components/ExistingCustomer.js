@@ -166,6 +166,13 @@ export class ExistingCustomer extends Component {
           customer_updated_message:'Customer updated successfully.'
           });   
         console.log('Success:', response);
+        this.setState({
+        DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(), 
+        PickerValue: '', 
+        jars_delivered: 0,
+         jars_picked: 0,
+         amount_paid: 0,
+        });
         });
 
 

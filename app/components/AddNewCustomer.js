@@ -138,6 +138,7 @@ export class AddNewCustomer extends Component {
           });
         });
     }
+    Keyboard.dismiss();
   }
   render() {
     return (
@@ -154,6 +155,7 @@ export class AddNewCustomer extends Component {
           <View style={styles.textInput}><TextInput
             placeholder="Name"
             onChangeText={(text) => this.updateValue(text, 'name')}>
+            {this.state.name}
           </TextInput>
           </View>
         </View>
@@ -162,6 +164,7 @@ export class AddNewCustomer extends Component {
           <View style={styles.textInput}><TextInput
             placeholder="Address"
             onChangeText={(text) => this.updateValue(text, 'address')}>
+            {this.state.address}
           </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
@@ -169,6 +172,7 @@ export class AddNewCustomer extends Component {
           <View style={styles.textInput}><TextInput
             placeholder="PhoneNo"
             onChangeText={(text) => this.updateValue(text, 'phoneno')}>
+            {this.state.phoneno}
           </TextInput></View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
