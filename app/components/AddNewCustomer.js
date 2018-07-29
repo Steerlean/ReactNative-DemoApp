@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert,Keyboard } from 'react-native';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -51,7 +51,7 @@ export class AddNewCustomer extends Component {
     var name = "" + this.state.name;
     var address = "" + this.state.address;
     var phoneno = "" + this.state.phoneno;
-    let reg_ex=/^[0-9]+$/;
+    let reg_ex = /^[0-9]+$/;
 
     var is_customername_field_empty = false;
     var is_customeraddress_field_empty = false;
@@ -85,18 +85,18 @@ export class AddNewCustomer extends Component {
         error_message_phoneno: 'Please enter valid phoneno',
       });
     } else {
-      if(reg_ex.test(phoneno)){
+      if (reg_ex.test(phoneno)) {
         is_customerphoneno_field_empty = false;
         this.setState({
           error_message_phoneno: '',
         });
-      }else{
+      } else {
         is_customerphoneno_field_empty = true;
         this.setState({
           error_message_phoneno: 'Please enter valid phoneno',
         });
       }
-      
+
 
     }
 
@@ -132,9 +132,9 @@ export class AddNewCustomer extends Component {
 
           console.log('Success:', response);
           this.setState({
-            name:'',
-            address:'',
-            phoneno:'',
+            name: '',
+            address: '',
+            phoneno: '',
           });
         });
     }
@@ -147,9 +147,9 @@ export class AddNewCustomer extends Component {
 
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
 
-        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+        {/* <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
         <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
-        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
+        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text> */}
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}><TextInput
@@ -159,6 +159,9 @@ export class AddNewCustomer extends Component {
           </TextInput>
           </View>
         </View>
+        <View style={styles.validating_form_textfield_name}>
+        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+        </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
           <View style={styles.textInput}><TextInput
@@ -166,6 +169,9 @@ export class AddNewCustomer extends Component {
             onChangeText={(text) => this.updateValue(text, 'address')}>
             {this.state.address}
           </TextInput></View>
+        </View>
+        <View style={styles.validating_form_textfield_address}>
+        <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Phone</Text></View>
@@ -175,6 +181,14 @@ export class AddNewCustomer extends Component {
             {this.state.phoneno}
           </TextInput></View>
         </View>
+        <View style={styles.validating_form_textfield_phone}>
+        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+          <Text style={styles.success_message_Text}>{this.state.customer_added_message}</Text>
+
+        </View>
         <View style={{ flexDirection: 'row' }}  >
 
           <Button
@@ -182,11 +196,7 @@ export class AddNewCustomer extends Component {
             title="Submit"
             color="#841584" />
         </View>
-        <View style={{ flexDirection: 'row' }}  >
 
-          <Text style={styles.success_message_Text}>{this.state.customer_added_message}</Text>
-
-        </View>
       </View>
 
     );
@@ -237,12 +247,23 @@ const styles = StyleSheet.create({
   },
   error_message_Text: {
     color: 'red',
+    marginLeft: 10,
   },
   success_message_Text: {
     padding: 20,
     color: 'green',
     fontSize: 20,
-  }
+  },
+  validating_form_textfield_name: {
+    marginLeft: 30,
+  },
+  validating_form_textfield_address: {
+    marginLeft: 40,
+  },
+  validating_form_textfield_phone: {
+    marginLeft: 80,
+  },
+  
 
 
 });

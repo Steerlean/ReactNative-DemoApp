@@ -8,7 +8,15 @@ class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      is_email_registered: false,
+    };
+
+  }
   componentDidMount() {
+
     GoogleSignin.hasPlayServices({ autoResolve: true })
       .then(() => {
       })
@@ -18,27 +26,66 @@ class HomeScreen extends React.Component {
 
     GoogleSignin.configure({
       scopes: ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"], // what API you want to access on behalf of the user, default is email and profile
-      
       webClientId: "5593423861-hg1s7arlubu7u75t7ssjqb3oi0rqj1le.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
-      
+
     }).then(() => {
 
     });
+
   }
+  handleRequestForAllAuthorizedEmailList(email) {
+
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet3!A1%3AA?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        var registered_email_values = responseJson.values;
+
+        for (let i = 0; i < registered_email_values.length; i++) {
+
+
+          if (registered_email_values[i] == email) {
+
+
+            this.setState({
+              is_email_registered: true,
+
+            })
+
+
+          }
+        }
+
+
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   googleLogin() {
 
-    GoogleSignin.signIn().then((user) => {
+    GoogleSignin.signOut().then(() => {
+      GoogleSignin.signIn().then((user) => {
+        this.handleRequestForAllAuthorizedEmailList(user.email).then(() => {
+          if (this.state.is_email_registered == true) {
+            var userName = user.name;
+            var accessToken = user.accessToken;
+            console.log(user)
+            this.setState({ user: user });
+            Alert.alert('You are logged in as ' + user.name)
+            this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
+            this.setState({
+              is_email_registered: false,
 
-      
+            })
+          } else {
+            alert("You dont have permissions to access this app!!");
+          }
+        })
+      })
 
-      
-      var userName=user.name;
-      var accessToken=user.accessToken;
-      console.log(user)
-      this.setState({ user: user });
-      Alert.alert('Hello ' + user.name)
-      this.props.navigation.navigate('Details',{username:userName,accesstoken:accessToken})
-      
+
     })
       .catch((err) => {
         console.log("WRONG SIGNIN", err);
@@ -46,7 +93,7 @@ class HomeScreen extends React.Component {
   }
   render() {
 
-   
+
     return (
       <View style={styles.container}>
 
@@ -56,7 +103,6 @@ class HomeScreen extends React.Component {
           source={require('./app/Images/biofresh_logo.png')}
         />
         <Text>SignIn with google</Text>
-
         <GoogleSigninButton
           style={{ width: 48, height: 48 }}
           size={GoogleSigninButton.Size.Icon}

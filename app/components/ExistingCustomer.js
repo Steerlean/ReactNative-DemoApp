@@ -21,9 +21,9 @@ export class ExistingCustomer extends Component {
       jars_picked: 0,
       amount_paid: 0,
       error_message_name: '',
-      error_message_jars_delivered:'',
-      customer_updated_message:'',
-      
+      error_message_jars_delivered: '',
+      customer_updated_message: '',
+
 
     }
 
@@ -109,30 +109,30 @@ export class ExistingCustomer extends Component {
     }
 
     if (is_customername_field_empty) {
-      
-      this.setState({
-        error_message_name:"Please Select a name",
-      });
-      console.log("Please Select a name");
 
-    }else{
       this.setState({
-        error_message_name:"",
+        error_message_name: "Please select a name",
       });
-      
+      console.log("Please select a name");
+
+    } else {
+      this.setState({
+        error_message_name: "",
+      });
+
     }
 
     if (is_jars_delivered_field_empty) {
-      console.log("Please Select jars")
+
       this.setState({
-        error_message_jars_delivered:"Please Select jars",
+        error_message_jars_delivered: "Please enter no. of jars delivered",
       });
 
-    }else{
+    } else {
       this.setState({
-        error_message_jars_delivered:"",
+        error_message_jars_delivered: "",
       });
-      
+
     }
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false) {
 
@@ -162,17 +162,17 @@ export class ExistingCustomer extends Component {
         .then(res => res.json())
         .catch(error => console.error('Error:', error))
         .then((response) => {
-         this.setState({
-          customer_updated_message:'Customer updated successfully.'
-          });   
-        console.log('Success:', response);
-        this.setState({
-        DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(), 
-        PickerValue: '', 
-        jars_delivered: 0,
-         jars_picked: 0,
-         amount_paid: 0,
-        });
+          this.setState({
+            customer_updated_message: 'Customer updated successfully.'
+          });
+          console.log('Success:', response);
+          this.setState({
+            DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
+            PickerValue: '',
+            jars_delivered: 0,
+            jars_picked: 0,
+            amount_paid: 0,
+          });
         });
 
 
@@ -187,10 +187,7 @@ export class ExistingCustomer extends Component {
       <View style={styles.container}>
 
         <Text styles={styles.header}>EXISTING CUSTOMER</Text>
-        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
-        <Text style={styles.error_message_Text}>{this.state.error_message_jars_delivered}</Text>
-        
-       <View style={{ flexDirection: 'row' }}  >
+        <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Date</Text></View>
           <View style={styles.textInput}>
 
@@ -217,15 +214,22 @@ export class ExistingCustomer extends Component {
               })}>
               {this.state.dataSource.map((l, i) => { return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i} /> })}
             </Picker>
-            <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
           </View>
+
         </View>
+        <View style={styles.validating_form_textfield_name}>
+          <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+        </View>
+
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Delivered</Text></View>
           <View style={styles.textInput}><TextInput
             onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
             {this.state.jars_delivered}
           </TextInput></View>
+        </View>
+        <View style={styles.validating_form_textfield_jarsDelivered}>
+          <Text style={styles.error_message_Text}>{this.state.error_message_jars_delivered}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Picked</Text></View>
@@ -241,6 +245,11 @@ export class ExistingCustomer extends Component {
             {this.state.amount_paid}
           </TextInput></View>
         </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+          <Text style={styles.success_message_Text}>{this.state.customer_updated_message}</Text>
+
+        </View>
 
         <View style={{ flexDirection: 'row' }}  >
 
@@ -251,11 +260,7 @@ export class ExistingCustomer extends Component {
 
 
         </View>
-        <View style={{ flexDirection: 'row' }}  >
 
-         <Text style={styles.success_message_Text}>{this.state.customer_updated_message}</Text>
-
-        </View>
 
       </View >
 
@@ -328,13 +333,19 @@ const styles = StyleSheet.create({
   },
   error_message_Text: {
     color: 'red',
+    marginLeft: 10,
   },
-  success_message_Text:{
-     padding:20,
-     color:'green',
-     fontSize:20,
+  success_message_Text: {
+    padding: 20,
+    color: 'green',
+    fontSize: 20,
+  },
+  validating_form_textfield_name: {
+    marginLeft: 45,
+  },
+  validating_form_textfield_jarsDelivered: {
+    marginLeft: 110,
   }
-
 
 
 });
