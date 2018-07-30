@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View, Text, StyleSheet, Alert, Image } from 'react-native';
+import { Button, View, Text, StyleSheet, Alert, Image,ToastAndroid } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import { Customer } from './app/components/Customer';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
@@ -73,7 +73,9 @@ class HomeScreen extends React.Component {
             var accessToken = user.accessToken;
             console.log(user)
             this.setState({ user: user });
-            Alert.alert('You are logged in as ' + user.name)
+            ToastAndroid.showWithGravityAndOffset('Welcome ' + user.name,ToastAndroid.LONG,ToastAndroid.BOTTOM,25,700);
+          //  ToastAndroid.showWithGravity('You are logged in as ' + user.name,ToastAndroid.SHORT,ToastAndroid.CENTER);
+         //   Alert.alert('You are logged in as ' + user.name)
             this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
             this.setState({
               is_email_registered: false,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard,ToastAndroid } from 'react-native';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
 import moment from 'moment';
 
@@ -22,6 +22,8 @@ export class ExistingCustomer extends Component {
       amount_paid: 0,
       error_message_name: '',
       error_message_jars_delivered: '',
+      error_message_jars_picked: '',
+      error_message_amount_paid: '',
       customer_updated_message: '',
 
 
@@ -95,46 +97,84 @@ export class ExistingCustomer extends Component {
   _onPressButton() {
     var name = "" + this.state.PickerValue;
     var jars_delivered = this.state.jars_delivered;
+    var jars_picked = this.state.jars_picked;
+    var amount_paid = this.state.amount_paid;
     var is_customername_field_empty = false;
     var is_jars_delivered_field_empty = false;
+    var is_jars_picked_field_empty = false;
+    var is_amount_paid_field_empty = false;
+    let reg_ex = /^[0-9]+$/;
 
+    console.log(name+" :"+jars_delivered+" :"+jars_picked+" :"+amount_paid);
     if (name == "" || name == "Select Name") {
 
       is_customername_field_empty = true;
     }
     if (jars_delivered == 0) {
-
-      is_jars_delivered_field_empty = true;
-
-    }
-
+        is_jars_delivered_field_empty = true;
+      }
     if (is_customername_field_empty) {
-
       this.setState({
-        error_message_name: "Please select a name",
+        error_message_name: "Please select a name.",
       });
-      console.log("Please select a name");
-
     } else {
       this.setState({
         error_message_name: "",
       });
-
     }
-
     if (is_jars_delivered_field_empty) {
-
       this.setState({
-        error_message_jars_delivered: "Please enter no. of jars delivered",
+        error_message_jars_delivered: "Invalid no. of jars delivered",
       });
-
     } else {
-      this.setState({
-        error_message_jars_delivered: "",
-      });
-
+      if (reg_ex.test(jars_delivered)) {
+        is_jars_delivered_field_empty = false;
+        this.setState({
+          error_message_jars_delivered: '',
+        });
+      } else {
+        is_jars_delivered_field_empty = true;
+        this.setState({
+          error_message_jars_delivered: 'Invalid no. of jars delivered.',
+        });
+      }
     }
-    if (is_customername_field_empty == false && is_jars_delivered_field_empty == false) {
+    if (is_jars_picked_field_empty) {
+      this.setState({
+        error_message_jars_picked: "Jars picked cannot be empty.",
+      });
+    } else {
+      if (reg_ex.test(jars_picked)) {
+        is_jars_picked_field_empty = false;
+        this.setState({
+          error_message_jars_picked: '',
+        });
+      } else {
+        is_jars_picked_field_empty = true;
+        this.setState({
+          error_message_jars_picked: 'Invalid no. of jars picked.',
+        });
+      }
+    }
+    if (is_amount_paid_field_empty) {
+      this.setState({
+        error_message_amount_paid: "Amount paid cannot be empty.",
+      });
+    } else {
+      if (reg_ex.test(amount_paid)) {
+        is_amount_paid_field_empty = false;
+        this.setState({
+          error_message_amount_paid: '',
+        });
+      } else {
+        is_amount_paid_field_empty = true;
+        this.setState({
+          error_message_amount_paid: 'Invalid amount.',
+        });
+      }
+   }
+
+    if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false ) {
 
       const newRecord = {
         majorDimension: 'ROWS',
@@ -162,9 +202,10 @@ export class ExistingCustomer extends Component {
         .then(res => res.json())
         .catch(error => console.error('Error:', error))
         .then((response) => {
-          this.setState({
-            customer_updated_message: 'Customer updated successfully.'
-          });
+          ToastAndroid.showWithGravityAndOffset('Customer updated successfully.',ToastAndroid.LONG,ToastAndroid.BOTTOM,25,700);
+          // this.setState({
+          //   customer_updated_message: 'Customer updated successfully.'
+          // });
           console.log('Success:', response);
           this.setState({
             DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
@@ -174,9 +215,7 @@ export class ExistingCustomer extends Component {
             amount_paid: 0,
           });
         });
-
-
-    };
+       };
     Keyboard.dismiss();
   }
 
@@ -238,6 +277,9 @@ export class ExistingCustomer extends Component {
             {this.state.jars_picked}
           </TextInput></View>
         </View>
+        <View style={styles.validating_form_textfield_jarsDelivered}>
+          <Text style={styles.error_message_Text}>{this.state.error_message_jars_picked}</Text>
+        </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Amount Paid</Text></View>
           <View style={styles.textInput}><TextInput
@@ -245,11 +287,14 @@ export class ExistingCustomer extends Component {
             {this.state.amount_paid}
           </TextInput></View>
         </View>
-        <View style={{ flexDirection: 'row' }}  >
+        <View style={styles.validating_form_textfield_name}>
+          <Text style={styles.error_message_Text}>{this.state.error_message_amount_paid}</Text>
+        </View>
+        {/* <View style={{ flexDirection: 'row' }}  >
 
           <Text style={styles.success_message_Text}>{this.state.customer_updated_message}</Text>
 
-        </View>
+        </View> */}
 
         <View style={{ flexDirection: 'row' }}  >
 
@@ -344,10 +389,8 @@ const styles = StyleSheet.create({
     marginLeft: 45,
   },
   validating_form_textfield_jarsDelivered: {
-    marginLeft: 110,
+    marginLeft: 90,
   }
-
-
 });
 
 

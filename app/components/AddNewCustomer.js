@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert,Keyboard } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert,Keyboard,ToastAndroid } from 'react-native';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -126,9 +126,10 @@ export class AddNewCustomer extends Component {
         .then(res => res.json())
         .catch(error => console.error('Error:', error))
         .then((response) => {
-          this.setState({
-            customer_added_message: 'Customer added successfully.'
-          });
+          ToastAndroid.showWithGravity('Customer added successfully.',ToastAndroid.LONG,ToastAndroid.CENTER);
+          // this.setState({
+          //   customer_added_message: 'Customer added successfully.'
+          // });
 
           console.log('Success:', response);
           this.setState({
@@ -184,11 +185,11 @@ export class AddNewCustomer extends Component {
         <View style={styles.validating_form_textfield_phone}>
         <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         </View>
-        <View style={{ flexDirection: 'row' }}  >
+        {/* <View style={{ flexDirection: 'row' }}  >
 
           <Text style={styles.success_message_Text}>{this.state.customer_added_message}</Text>
 
-        </View>
+        </View> */}
         <View style={{ flexDirection: 'row' }}  >
 
           <Button
