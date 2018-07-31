@@ -73,10 +73,8 @@ class HomeScreen extends React.Component {
             var accessToken = user.accessToken;
             console.log(user)
             this.setState({ user: user });
-            ToastAndroid.showWithGravityAndOffset('Welcome ' + user.name,ToastAndroid.LONG,ToastAndroid.BOTTOM,25,700);
-          //  ToastAndroid.showWithGravity('You are logged in as ' + user.name,ToastAndroid.SHORT,ToastAndroid.CENTER);
-         //   Alert.alert('You are logged in as ' + user.name)
-            this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
+            ToastAndroid.showWithGravity('You are logged in as ' + user.name,ToastAndroid.LONG,ToastAndroid.CENTER);
+             this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
             this.setState({
               is_email_registered: false,
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert,Keyboard,ToastAndroid } from 'react-native';
-
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid } from 'react-native';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -20,11 +19,37 @@ export class AddNewCustomer extends Component {
       error_message_name: '',
       error_message_address: '',
       error_message_phoneno: '',
-      customer_added_message: '',
+      is_phone_registered: false,
+
+
     }
   }
-  updateValue(text, field) {
+  handleRequestForAllUniquePhoneNo(phone_no) {
 
+    this.setState({ is_phone_registered: false, })
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!C2%3AC?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+      .then((response) => response.json())
+      .then((responseJson) => {
+
+        var registered_phone_values = responseJson.values;
+
+        for (let i = 0; i < registered_phone_values.length; i++) {
+          console.log(registered_phone_values[i]);
+          if (registered_phone_values[i] == phone_no) {
+            console.log(registered_phone_values[i]);
+            this.setState({ is_phone_registered: true, })
+
+          }
+
+        }
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  updateValue(text, field) {
     var name;
     var address;
     var phoneno;
@@ -82,7 +107,7 @@ export class AddNewCustomer extends Component {
     if (phoneno == '') {
       is_customerphoneno_field_empty = true;
       this.setState({
-        error_message_phoneno: 'Please enter valid phoneno',
+        error_message_phoneno: 'Please enter phoneno',
       });
     } else {
       if (reg_ex.test(phoneno)) {
@@ -95,62 +120,73 @@ export class AddNewCustomer extends Component {
         this.setState({
           error_message_phoneno: 'Please enter valid phoneno',
         });
+
       }
+      this.handleRequestForAllUniquePhoneNo(phoneno).then(() => {
+
+        console.log("1" + this.state.is_phone_registered);
+        if (this.state.is_phone_registered == true) {
+          console.log("2" + this.state.is_phone_registered);
+          this.setState({
+            error_message_phoneno: 'MobileNo. already exists.',
+          });
+
+        }
+
+        else {
+
+          if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false && this.state.is_phone_registered == false) {
+            const newRecord = {
+              majorDimension: 'ROWS',
+              values: [
+                [
+                  this.props.username,
+                  this.state.name,
+                  this.state.phoneno,
+                  this.state.address,
+                ]
+              ]
+            };
 
 
-    }
+            var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
+            fetch(url, {
+              method: 'POST',
+              body: JSON.stringify(newRecord),
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + this.props.accesstoken,
+              }
+            })
+              .then(res => res.json())
+              .catch(error => console.error('Error:', error))
+              .then((response) => {
+                ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
 
-    if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false) {
-      const newRecord = {
-        majorDimension: 'ROWS',
-        values: [
-          [
-            this.props.username,
-            this.state.name,
-            this.state.phoneno,
-            this.state.address,
-          ]
-        ]
-      };
 
+                console.log('Success:', response);
+                this.setState({
+                  name: '',
+                  address: '',
+                  phoneno: '',
+                });
+              });
+          }
+          Keyboard.dismiss();
 
-      var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
-      fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(newRecord),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.accesstoken,
         }
       })
-        .then(res => res.json())
-        .catch(error => console.error('Error:', error))
-        .then((response) => {
-          ToastAndroid.showWithGravity('Customer added successfully.',ToastAndroid.LONG,ToastAndroid.CENTER);
-          // this.setState({
-          //   customer_added_message: 'Customer added successfully.'
-          // });
-
-          console.log('Success:', response);
-          this.setState({
-            name: '',
-            address: '',
-            phoneno: '',
-          });
-        });
     }
-    Keyboard.dismiss();
+
+
   }
   render() {
+
+
     return (
 
       <View style={styles.container}>
-
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
-
-        {/* <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
-        <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
-        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text> */}
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
           <View style={styles.textInput}><TextInput
@@ -161,7 +197,7 @@ export class AddNewCustomer extends Component {
           </View>
         </View>
         <View style={styles.validating_form_textfield_name}>
-        <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
+          <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
@@ -172,7 +208,7 @@ export class AddNewCustomer extends Component {
           </TextInput></View>
         </View>
         <View style={styles.validating_form_textfield_address}>
-        <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
+          <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Phone</Text></View>
@@ -183,13 +219,11 @@ export class AddNewCustomer extends Component {
           </TextInput></View>
         </View>
         <View style={styles.validating_form_textfield_phone}>
-        <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
+          <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         </View>
-        {/* <View style={{ flexDirection: 'row' }}  >
 
-          <Text style={styles.success_message_Text}>{this.state.customer_added_message}</Text>
 
-        </View> */}
+
         <View style={{ flexDirection: 'row' }}  >
 
           <Button
@@ -221,6 +255,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'darkgrey',
     borderBottomWidth: 1,
     paddingBottom: 20,
+    fontWeight: 'bold',
   },
 
   buttonSubmit: {
@@ -264,8 +299,10 @@ const styles = StyleSheet.create({
   validating_form_textfield_phone: {
     marginLeft: 80,
   },
-  
+
 
 
 });
+
+
 
