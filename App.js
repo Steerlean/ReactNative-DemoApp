@@ -4,7 +4,7 @@ import { createStackNavigator } from 'react-navigation';
 import { Customer } from './app/components/Customer';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import { ExistingCustomer } from './app/components/ExistingCustomer';
-class HomeScreen extends React.Component {
+export class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
@@ -122,7 +122,6 @@ const RootStack = createStackNavigator(
     Details: Customer,
   },
 );
-
 
 export default class App extends React.Component {
   render() {

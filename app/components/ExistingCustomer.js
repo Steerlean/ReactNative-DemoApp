@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid } from 'react-native';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
+import { GoogleSignin} from 'react-native-google-signin';
+import { createStackNavigator } from 'react-navigation';
 import moment from 'moment';
-
-
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
+// const RootStack = createStackNavigator(
+//   {
+//     Home: App,
+   
+//   },
+// );
 export class ExistingCustomer extends Component {
   constructor() {
     super();
@@ -92,7 +98,11 @@ export class ExistingCustomer extends Component {
       });
   }
   _onPressSignoutButton() {
+    GoogleSignin.revokeAccess();HomeScreen
     GoogleSignin.signOut();
+    //this.props.navigation.navigate('Home');
+    //this.props.navigation.dispatch(RootStack);
+    
 
   }
 
@@ -126,7 +136,7 @@ export class ExistingCustomer extends Component {
     }
     if (is_jars_delivered_field_empty) {
       this.setState({
-        error_message_jars_delivered: "Please enter valid no. of jars delivered",
+        error_message_jars_delivered: "Please enter no. of jars delivered",
       });
     } else {
       if (reg_ex.test(jars_delivered)) {
@@ -223,7 +233,7 @@ export class ExistingCustomer extends Component {
   render() {
 
     return (
-
+      
       <View style={styles.container}>
         <View style={{ flexDirection: 'row' }}  >
           <Text styles={styles.header}>EXISTING CUSTOMER</Text>
@@ -289,7 +299,7 @@ export class ExistingCustomer extends Component {
             {this.state.amount_paid}
           </TextInput></View>
         </View>
-        <View style={styles.validating_form_textfield_name}>
+        <View style={styles.validating_form_textfield_amount}>
           <Text style={styles.error_message_Text}>{this.state.error_message_amount_paid}</Text>
         </View>
         {/* <View style={{ flexDirection: 'row' }}  >
@@ -307,16 +317,16 @@ export class ExistingCustomer extends Component {
 
 
         </View>
-
-        {/* <View>
+        {/* <View style={{ width:450,marginTop:240}}  >
           <Button
             onPress={this._onPressSignoutButton.bind(this)}
             title="SignOut"
-            color="#841584" />
+            color="deepskyblue"
+           />
         </View> */}
-
-
-      </View >
+        </View >
+          
+        
 
     );
   }
@@ -399,7 +409,10 @@ const styles = StyleSheet.create({
     marginLeft: 45,
   },
   validating_form_textfield_jarsDelivered: {
-    marginLeft: 90,
+    marginLeft: 110,
+  },
+  validating_form_textfield_amount: {
+    marginLeft: 75,
   }
 });
 

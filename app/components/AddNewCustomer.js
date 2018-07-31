@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid,ScrollView } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -107,7 +109,7 @@ export class AddNewCustomer extends Component {
     if (phoneno == '') {
       is_customerphoneno_field_empty = true;
       this.setState({
-        error_message_phoneno: 'Please enter phoneno',
+        error_message_phoneno: 'Please enter valid phoneno',
       });
     } else {
       if (reg_ex.test(phoneno)) {
@@ -124,9 +126,9 @@ export class AddNewCustomer extends Component {
       }
       this.handleRequestForAllUniquePhoneNo(phoneno).then(() => {
 
-        console.log("1" + this.state.is_phone_registered);
+       
         if (this.state.is_phone_registered == true) {
-          console.log("2" + this.state.is_phone_registered);
+         
           this.setState({
             error_message_phoneno: 'MobileNo. already exists.',
           });
@@ -201,11 +203,16 @@ export class AddNewCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
-          <View style={styles.textInput}><TextInput
+          <View style={styles.textInput}>
+          <ScrollView>
+          <TextInput
+            multiline={true}
             placeholder="Address"
             onChangeText={(text) => this.updateValue(text, 'address')}>
             {this.state.address}
-          </TextInput></View>
+          </TextInput>
+          </ScrollView>
+          </View>
         </View>
         <View style={styles.validating_form_textfield_address}>
           <Text style={styles.error_message_Text}>{this.state.error_message_address}</Text>
