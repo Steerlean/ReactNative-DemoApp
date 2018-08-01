@@ -10,12 +10,7 @@ const instructions = Platform.select({
     'Double tap R on your keyboard to reload,\n' +
     'Shake or press menu button for dev menu',
 });
-// const RootStack = createStackNavigator(
-//   {
-//     Home: App,
-   
-//   },
-// );
+
 export class ExistingCustomer extends Component {
   constructor() {
     super();
@@ -83,7 +78,11 @@ export class ExistingCustomer extends Component {
 
   }
   componentDidMount() {
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!B2%3AB?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+      //Testing-appbiofresh@gmail.com
+     return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!B2%3AB?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
+  
+     //Production-biofresh.hs@gmail.com
+      //return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details!B2%3AB?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
@@ -100,8 +99,6 @@ export class ExistingCustomer extends Component {
   _onPressSignoutButton() {
     GoogleSignin.revokeAccess();HomeScreen
     GoogleSignin.signOut();
-    //this.props.navigation.navigate('Home');
-    //this.props.navigation.dispatch(RootStack);
     
 
   }
@@ -201,9 +198,12 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-
-      var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
-      fetch(url, {
+      //Testing-appbiofresh@gmail.com
+     var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyBnHeKJ6kNV4EQWEIojB2jFjzrqOKYbtSA';
+      
+    //Production-biofresh.hs@gmail.com 
+     //var url = 'https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ';
+    fetch(url, {
         method: 'POST',
         body: JSON.stringify(newRecord),
         headers: {

@@ -29,8 +29,13 @@ export class AddNewCustomer extends Component {
   handleRequestForAllUniquePhoneNo(phone_no) {
 
     this.setState({ is_phone_registered: false, })
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!C2%3AC?key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU')
-      .then((response) => response.json())
+    //Testing-appbiofresh@gmail.com
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1!C2%3AC?key=AIzaSyBnHeKJ6kNV4EQWEIojB2jFjzrqOKYbtSA')
+    
+    //Production-biofresh.hs@gmail.com 
+    //return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details!C2%3AC?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
+    
+    .then((response) => response.json())
       .then((responseJson) => {
 
         var registered_phone_values = responseJson.values;
@@ -150,9 +155,13 @@ export class AddNewCustomer extends Component {
               ]
             };
 
-
-            var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyCLby0W3hX6SVicmNz0HbZun8A8mHe-5kU';
-            fetch(url, {
+          //Testing-appbiofresh@gmail.com
+          var url = 'https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet1:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyBnHeKJ6kNV4EQWEIojB2jFjzrqOKYbtSA';
+           
+          //Production-biofresh.hs@gmail.com 
+         // var url = 'https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ';
+           
+          fetch(url, {
               method: 'POST',
               body: JSON.stringify(newRecord),
               headers: {
