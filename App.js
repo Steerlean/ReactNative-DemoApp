@@ -4,6 +4,9 @@ import { createStackNavigator } from 'react-navigation';
 import { Customer } from './app/components/Customer';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import { ExistingCustomer } from './app/components/ExistingCustomer';
+import { Web_CLient_ID, spreadsheet_ID, API_key } from './Test_Properties';
+//import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
+
 export class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -16,7 +19,6 @@ export class HomeScreen extends React.Component {
 
   }
   componentDidMount() {
-
     GoogleSignin.hasPlayServices({ autoResolve: true })
       .then(() => {
       })
@@ -28,8 +30,7 @@ export class HomeScreen extends React.Component {
       scopes: ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"], // what API you want to access on behalf of the user, default is email and profile
      
       //Testing-appbiofresh@gmail.com
-      webClientId: "5593423861-hg1s7arlubu7u75t7ssjqb3oi0rqj1le.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
-      
+      webClientId: Web_CLient_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
      //Production-biofresh.hs@gmail.com
      //webClientId:'1060192372477-8q378g6lc2ua4382uuli623qj51q3105.apps.googleusercontent.com',
     }).then(() => {
@@ -39,7 +40,7 @@ export class HomeScreen extends React.Component {
   }
   handleRequestForAllAuthorizedEmailList(email) {
       //Testing-appbiofresh@gmail.com
-     return fetch('https://sheets.googleapis.com/v4/spreadsheets/1_sIKjoYU7wDlGysnna9cXvTLQdGGjjmP3lFzMmj0aWU/values/Sheet3!A1%3AA?key=AIzaSyBnHeKJ6kNV4EQWEIojB2jFjzrqOKYbtSA')
+     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Sheet3!A1%3AA?key='+API_key)
   
      //Production-biofresh.hs@gmail.com
     // return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Registered_EmailID!A1%3AA?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
