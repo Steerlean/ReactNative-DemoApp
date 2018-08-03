@@ -24,7 +24,7 @@ export class ExistingCustomer extends Component {
       dataSource: [],
       jars_delivered: 0,
       jars_picked: 0,
-      amount_paid: 0,
+      amount_paid: '',
       error_message_name: '',
       error_message_jars_delivered: '',
       error_message_jars_picked: '',
@@ -32,12 +32,9 @@ export class ExistingCustomer extends Component {
       Customer_Details:'Customer_Details',
       Delivery:'Delivery',
       Registered_EmailID:'Registered_EmailID',
-     
     }
-
   }
   DatePickerMainFunctionCall = () => {
-
     let DateHolder = this.state.DateHolder;
 
     if (!DateHolder || DateHolder == null) {
@@ -47,13 +44,10 @@ export class ExistingCustomer extends Component {
         DateHolder: DateHolder
       });
     }
-
     this.refs.DatePickerDialog.open({
 
       date: DateHolder,
-
-    });
-
+      });
   }
   onDatePickedFunction = (date) => {
     this.setState({
@@ -69,7 +63,6 @@ export class ExistingCustomer extends Component {
       this.setState({
         jars_delivered: text,
       })
-
     } else if (field == 'jars_picked') {
 
       this.setState({
@@ -81,34 +74,24 @@ export class ExistingCustomer extends Component {
         amount_paid: text,
       })
     }
-
-
   }
   componentDidMount() {
-      //Testing-appbiofresh@gmail.com
      return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Customer_Details!B2%3AB?key='+API_key)
-  
-     //Production-biofresh.hs@gmail.com
-      //return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details!B2%3AB?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
-      .then((response) => response.json())
-      .then((responseJson) => {
+     .then((response) => response.json())
+     .then((responseJson) => {
         console.log(responseJson);
         this.setState({
           dataSource: responseJson.values,
-        }, function () {
-
-        });
+        }, function () {});
       })
       .catch((error) => {
         console.error(error);
       });
   }
   _onPressSignoutButton() {
-    GoogleSignin.revokeAccess();HomeScreen
+    GoogleSignin.revokeAccess();
     GoogleSignin.signOut();
-    
-
-  }
+   }
 
   _onPressButton() {
     var name = "" + this.state.PickerValue;
@@ -121,7 +104,6 @@ export class ExistingCustomer extends Component {
     var is_amount_paid_field_empty = false;
     let reg_ex = /^[0-9]+$/;
 
-    console.log(name + " :" + jars_delivered + " :" + jars_picked + " :" + amount_paid);
     if (name == "" || name == "Select Name") {
 
       is_customername_field_empty = true;
@@ -155,12 +137,7 @@ export class ExistingCustomer extends Component {
         });
       }
     }
-    if (is_jars_picked_field_empty) {
-      this.setState({
-        error_message_jars_picked: "Jars picked cannot be empty.",
-      });
-    } else {
-      if (reg_ex.test(jars_picked)) {
+    if (reg_ex.test(jars_picked)) {
         is_jars_picked_field_empty = false;
         this.setState({
           error_message_jars_picked: '',
@@ -171,13 +148,7 @@ export class ExistingCustomer extends Component {
           error_message_jars_picked: 'Please enter valid no. of jars picked',
         });
       }
-    }
-    if (is_amount_paid_field_empty) {
-      this.setState({
-        error_message_amount_paid: "Amount paid cannot be empty.",
-      });
-    } else {
-      if (reg_ex.test(amount_paid)) {
+    if (reg_ex.test(amount_paid)) {
         is_amount_paid_field_empty = false;
         this.setState({
           error_message_amount_paid: '',
@@ -188,11 +159,8 @@ export class ExistingCustomer extends Component {
           error_message_amount_paid: 'Please enter valid amount.',
         });
       }
-    }
-
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false) {
-
-      const newRecord = {
+        const newRecord = {
         majorDimension: 'ROWS',
         values: [
           [
@@ -205,12 +173,8 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-      //Testing-appbiofresh@gmail.com
      var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
-      
-    //Production-biofresh.hs@gmail.com 
-     //var url = 'https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ';
-    fetch(url, {
+      fetch(url, {
         method: 'POST',
         body: JSON.stringify(newRecord),
         headers: {
@@ -230,7 +194,7 @@ export class ExistingCustomer extends Component {
             PickerValue: '',
             jars_delivered: 0,
             jars_picked: 0,
-            amount_paid: 0,
+            amount_paid: '',
           });
         });
     };
@@ -238,7 +202,6 @@ export class ExistingCustomer extends Component {
   }
 
   render() {
-
     return (
       
       <View style={styles.container}>
@@ -317,10 +280,11 @@ export class ExistingCustomer extends Component {
 
         <View style={{ flexDirection: 'row' }}  >
 
-          <Button
-            onPress={this._onPressButton.bind(this)}
-            title="Submit"
-            color="#841584" />
+          <TouchableOpacity onPress={this._onPressButton.bind(this)}>
+            <View style={styles.buttonSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
+            </View>
+          </TouchableOpacity>
 
 
         </View>
@@ -358,16 +322,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     fontWeight: 'bold',
   },
-
   buttonSubmit: {
-    width: 70,
-    height: 10,
-    margin: 130,
-    marginTop: 0,
-    flex: 20,
-
+    marginTop: 10,
+    height: 40,
+    width: 100,
+    alignItems: 'center',
+    backgroundColor: '#841584'
   },
-
+  buttonText: {
+    color: 'white',
+    padding:10
+  },
   label: {
     fontSize: 20,
     width: 100,

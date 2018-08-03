@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid,ScrollView } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid,ScrollView,TouchableOpacity } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
 //import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
@@ -12,9 +12,7 @@ const instructions = Platform.select({
 });
 
 export class AddNewCustomer extends Component {
-
-
-  constructor(props) {
+constructor(props) {
     super(props);
     this.state = {
       name: '',
@@ -26,30 +24,20 @@ export class AddNewCustomer extends Component {
       is_phone_registered: false,
     }
   }
+  
   handleRequestForAllUniquePhoneNo(phone_no) {
-
     this.setState({ is_phone_registered: false, })
-    //Testing-appbiofresh@gmail.com
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/!C2%3AC?key='+API_key)
-    
-    //Production-biofresh.hs@gmail.com 
-    //return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details!C2%3AC?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
-    
     .then((response) => response.json())
-      .then((responseJson) => {
-
-        var registered_phone_values = responseJson.values;
-
-        for (let i = 0; i < registered_phone_values.length; i++) {
+    .then((responseJson) => {
+      var registered_phone_values = responseJson.values;
+      for (let i = 0; i < registered_phone_values.length; i++) {
           console.log(registered_phone_values[i]);
           if (registered_phone_values[i] == phone_no) {
             console.log(registered_phone_values[i]);
             this.setState({ is_phone_registered: true, })
-
           }
-
         }
-
       })
       .catch((error) => {
         console.error(error);
@@ -78,13 +66,10 @@ export class AddNewCustomer extends Component {
     }
   }
   _onPressButton() {
-
-
     var name = "" + this.state.name;
     var address = "" + this.state.address;
     var phoneno = "" + this.state.phoneno;
     let reg_ex = /^[0-9]+$/;
-
     var is_customername_field_empty = false;
     var is_customeraddress_field_empty = false;
     var is_customerphoneno_field_empty = false;
@@ -127,22 +112,15 @@ export class AddNewCustomer extends Component {
         this.setState({
           error_message_phoneno: 'Please enter valid phoneno',
         });
-
       }
-      this.handleRequestForAllUniquePhoneNo(phoneno).then(() => {
 
-       
+      this.handleRequestForAllUniquePhoneNo(phoneno).then(() => {
         if (this.state.is_phone_registered == true) {
-         
           this.setState({
             error_message_phoneno: 'MobileNo. already exists.',
           });
-
-        }
-
-        else {
-
-          if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false && this.state.is_phone_registered == false) {
+        }else {
+           if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false && this.state.is_phone_registered == false) {
             const newRecord = {
               majorDimension: 'ROWS',
               values: [
@@ -154,14 +132,8 @@ export class AddNewCustomer extends Component {
                 ]
               ]
             };
-
-          //Testing-appbiofresh@gmail.com
           var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Customer_Details:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
-           
-          //Production-biofresh.hs@gmail.com 
-         // var url = 'https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ';
-           
-          fetch(url, {
+           fetch(url, {
               method: 'POST',
               body: JSON.stringify(newRecord),
               headers: {
@@ -173,8 +145,6 @@ export class AddNewCustomer extends Component {
               .catch(error => console.error('Error:', error))
               .then((response) => {
                 ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-
-
                 console.log('Success:', response);
                 this.setState({
                   name: '',
@@ -184,17 +154,12 @@ export class AddNewCustomer extends Component {
               });
           }
           Keyboard.dismiss();
-
         }
       })
     }
-
-
   }
   render() {
-
-
-    return (
+      return (
 
       <View style={styles.container}>
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
@@ -237,20 +202,16 @@ export class AddNewCustomer extends Component {
         <View style={styles.validating_form_textfield_phone}>
           <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         </View>
-
-
-
-        <View style={{ flexDirection: 'row' }}  >
-
-          <Button
-            onPress={this._onPressButton.bind(this)}
-            title="Submit"
-            color="#841584" />
+         <View style={{ flexDirection: 'row' }}  >
+           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
+            <View style={styles.buttonSubmit}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
       </View>
-
-    );
+      );
   }
 }
 
@@ -273,15 +234,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     fontWeight: 'bold',
   },
-
   buttonSubmit: {
-    width: 70,
-    height: 10,
-    margin: 130,
-    marginTop: 0,
-    flex: 20,
+    marginTop: 10,
+    height: 40,
+    width: 100,
+    alignItems: 'center',
+    backgroundColor: '#841584'
   },
-
+  buttonText: {
+    color: 'white',
+    padding:10
+  },
   label: {
     fontSize: 20,
     width: 100,
@@ -315,9 +278,6 @@ const styles = StyleSheet.create({
   validating_form_textfield_phone: {
     marginLeft: 80,
   },
-
-
-
 });
 
 
