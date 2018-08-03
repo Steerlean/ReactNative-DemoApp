@@ -3,6 +3,8 @@ import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, T
 import { createStackNavigator } from 'react-navigation';
 import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
 //import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
+import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
+
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -21,8 +23,18 @@ constructor(props) {
       error_message_name: '',
       error_message_address: '',
       error_message_phoneno: '',
+      error_message_total: '',
       is_phone_registered: false,
+      deposit_paid: '',
+      total: '',
     }
+    this.onSelect = this.onSelect.bind(this)
+
+  }
+  onSelect(index, value) {
+    this.setState({
+      deposit_paid: `${value}`,
+    })
   }
   
   handleRequestForAllUniquePhoneNo(phone_no) {
@@ -48,6 +60,7 @@ constructor(props) {
     var name;
     var address;
     var phoneno;
+    var total;
     if (field == 'name') {
       this.setState({
         name: text,
@@ -63,6 +76,11 @@ constructor(props) {
       this.setState({
         phoneno: text,
       })
+    } else if (field == 'total') {
+      this.setState({
+        total: text,
+      })
+
     }
   }
   _onPressButton() {
@@ -70,9 +88,12 @@ constructor(props) {
     var address = "" + this.state.address;
     var phoneno = "" + this.state.phoneno;
     let reg_ex = /^[0-9]+$/;
+    var total=""+this.state.total;
+
     var is_customername_field_empty = false;
     var is_customeraddress_field_empty = false;
     var is_customerphoneno_field_empty = false;
+    var is_customertotal_field_empty = false;
 
     if (name == '') {
       is_customername_field_empty = true;
@@ -129,6 +150,10 @@ constructor(props) {
                   this.state.name,
                   this.state.phoneno,
                   this.state.address,
+                  "","","","","",
+                  this.state.total,
+                  this.state.deposit_paid,
+                  
                 ]
               ]
             };
@@ -150,6 +175,7 @@ constructor(props) {
                   name: '',
                   address: '',
                   phoneno: '',
+                  total:'',
                 });
               });
           }
@@ -157,6 +183,19 @@ constructor(props) {
         }
       })
     }
+    if (total == '') {
+      is_customertotal_field_empty = true;
+      this.setState({
+        error_message_total: 'Please enter total amount',
+      });
+    } else {
+      is_customertotal_field_empty = false;
+      this.setState({
+        error_message_total: '',
+      });
+    }
+
+
   }
   render() {
       return (
@@ -178,14 +217,14 @@ constructor(props) {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
           <View style={styles.textInput}>
-          <ScrollView>
-          <TextInput
-            multiline={true}
-            placeholder="Address"
-            onChangeText={(text) => this.updateValue(text, 'address')}>
-            {this.state.address}
-          </TextInput>
-          </ScrollView>
+            <ScrollView>
+              <TextInput
+                multiline={true}
+                placeholder="Address"
+                onChangeText={(text) => this.updateValue(text, 'address')}>
+                {this.state.address}
+              </TextInput>
+            </ScrollView>
           </View>
         </View>
         <View style={styles.validating_form_textfield_address}>
@@ -199,15 +238,54 @@ constructor(props) {
             {this.state.phoneno}
           </TextInput></View>
         </View>
+
         <View style={styles.validating_form_textfield_phone}>
           <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         </View>
-         <View style={{ flexDirection: 'row' }}  >
-           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Total</Text></View>
+          <View style={styles.textInput}><TextInput
+            placeholder="Total"
+            onChangeText={(text) => this.updateValue(text, 'total')}>
+            {this.state.total}
+          </TextInput></View>
+
+        </View>
+        <View style={styles.validating_form_textfield_total}>
+          <Text style={styles.error_message_Text}>{this.state.error_message_total}</Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+          <View style={styles.label}><Text>Deposit Paid</Text></View>
+          <View style={{ width: 200, height: 50, marginBottom: 50 }}>
+            <RadioGroup
+
+              size={15}
+              thickness={2}
+
+              selectedIndex={1}
+              onSelect={(index, value) => this.onSelect(index, value)}>
+              <RadioButton
+                value='Yes'
+                color='black'>
+                <Text>Yes</Text>
+              </RadioButton>
+              <RadioButton
+                value='No'
+                color='black'>
+                <Text>No</Text>
+              </RadioButton>
+
+            </RadioGroup>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+
+          <TouchableOpacity onPress={this._onPressButton.bind(this)}>
             <View style={styles.buttonSubmit}>
-              <Text style={styles.buttonText}>Submit</Text>
+            <Text style={styles.buttonText}>Submit</Text>
             </View>
           </TouchableOpacity>
+
         </View>
 
       </View>
@@ -278,7 +356,23 @@ const styles = StyleSheet.create({
   validating_form_textfield_phone: {
     marginLeft: 80,
   },
+  validating_form_textfield_total: {
+    marginLeft: 80,
+  },
+  container_radio: {
+    marginTop: 40,
+
+  },
+  text_radio: {
+    padding: 10,
+    fontSize: 14,
+  },
+
+
+
 });
+
+
 
 
 

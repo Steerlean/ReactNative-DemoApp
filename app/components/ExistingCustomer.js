@@ -29,9 +29,8 @@ export class ExistingCustomer extends Component {
       error_message_jars_delivered: '',
       error_message_jars_picked: '',
       error_message_amount_paid: '',
-      Customer_Details:'Customer_Details',
-      Delivery:'Delivery',
-      Registered_EmailID:'Registered_EmailID',
+      
+     
     }
   }
   DatePickerMainFunctionCall = () => {
