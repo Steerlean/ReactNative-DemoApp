@@ -4,7 +4,7 @@ import { DatePickerDialog } from 'react-native-datepicker-dialog'
 import { GoogleSignin} from 'react-native-google-signin';
 import { createStackNavigator } from 'react-navigation';
 import moment from 'moment';
-import { Web_CLient_ID, spreadsheet_ID, API_key } from './Test_Properties';
+import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
 //import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
 
 const instructions = Platform.select({
@@ -29,6 +29,10 @@ export class ExistingCustomer extends Component {
       error_message_jars_delivered: '',
       error_message_jars_picked: '',
       error_message_amount_paid: '',
+      Customer_Details:'Customer_Details',
+      Delivery:'Delivery',
+      Registered_EmailID:'Registered_EmailID',
+     
     }
 
   }
@@ -82,7 +86,7 @@ export class ExistingCustomer extends Component {
   }
   componentDidMount() {
       //Testing-appbiofresh@gmail.com
-     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Sheet1!B2%3AB?key='+API_key)
+     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Customer_Details!B2%3AB?key='+API_key)
   
      //Production-biofresh.hs@gmail.com
       //return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Customer_Details!B2%3AB?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
@@ -202,7 +206,7 @@ export class ExistingCustomer extends Component {
         ]
       };
       //Testing-appbiofresh@gmail.com
-     var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Sheet2!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
+     var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
       
     //Production-biofresh.hs@gmail.com 
      //var url = 'https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ';

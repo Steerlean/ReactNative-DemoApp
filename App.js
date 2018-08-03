@@ -40,7 +40,7 @@ export class HomeScreen extends React.Component {
   }
   handleRequestForAllAuthorizedEmailList(email) {
       //Testing-appbiofresh@gmail.com
-     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Sheet3!A1%3AA?key='+API_key)
+     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Registered_EmailID!A1%3AA?key='+API_key)
   
      //Production-biofresh.hs@gmail.com
     // return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Registered_EmailID!A1%3AA?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
