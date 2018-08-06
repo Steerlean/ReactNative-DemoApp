@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid, ScrollView } from 'react-native';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
-import { GoogleSignin} from 'react-native-google-signin';
+import { GoogleSignin } from 'react-native-google-signin';
 import { createStackNavigator } from 'react-navigation';
 import moment from 'moment';
+import Autocomplete from 'react-native-autocomplete-input';
 import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
 //import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
 
@@ -25,12 +26,11 @@ export class ExistingCustomer extends Component {
       jars_delivered: 0,
       jars_picked: 0,
       amount_paid: '',
+      query: '',
       error_message_name: '',
       error_message_jars_delivered: '',
       error_message_jars_picked: '',
       error_message_amount_paid: '',
-      
-     
     }
   }
   DatePickerMainFunctionCall = () => {
@@ -46,7 +46,7 @@ export class ExistingCustomer extends Component {
     this.refs.DatePickerDialog.open({
 
       date: DateHolder,
-      });
+    });
   }
   onDatePickedFunction = (date) => {
     this.setState({
@@ -58,7 +58,12 @@ export class ExistingCustomer extends Component {
     var jars_delivered;
     var jars_picked;
     var amount_paid;
-    if (field == 'jars_delivered') {
+
+    if (field == 'name') {
+      this.setState({
+        selectName: text,
+      })
+    } else if (field == 'jars_delivered') {
       this.setState({
         jars_delivered: text,
       })
@@ -75,25 +80,40 @@ export class ExistingCustomer extends Component {
     }
   }
   componentDidMount() {
-     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Customer_Details!B2%3AB?key='+API_key)
-     .then((response) => response.json())
-     .then((responseJson) => {
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details!B2%3AB?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
         console.log(responseJson);
         this.setState({
           dataSource: responseJson.values,
-        }, function () {});
+        }, function () { });
       })
       .catch((error) => {
         console.error(error);
       });
   }
+  findFilm(query) {
+    if (query === '') {
+      return [];
+    }
+    const dataSource2 = [];
+    for (let i = 0; i < this.state.dataSource.length; i++) {
+      const obj = {};
+      obj["name"] = this.state.dataSource[i][0];
+      dataSource2.push(obj);
+    }
+    const regex = new RegExp(`${query.trim()}`, 'i');
+    return dataSource2.filter((text) =>
+      text.name.search(regex) >= 0
+    );
+  }
   _onPressSignoutButton() {
     GoogleSignin.revokeAccess();
     GoogleSignin.signOut();
-   }
+  }
 
   _onPressButton() {
-    var name = "" + this.state.PickerValue;
+    var name = this.state.query;
     var jars_delivered = this.state.jars_delivered;
     var jars_picked = this.state.jars_picked;
     var amount_paid = this.state.amount_paid;
@@ -137,29 +157,29 @@ export class ExistingCustomer extends Component {
       }
     }
     if (reg_ex.test(jars_picked)) {
-        is_jars_picked_field_empty = false;
-        this.setState({
-          error_message_jars_picked: '',
-        });
-      } else {
-        is_jars_picked_field_empty = true;
-        this.setState({
-          error_message_jars_picked: 'Please enter valid no. of jars picked',
-        });
-      }
+      is_jars_picked_field_empty = false;
+      this.setState({
+        error_message_jars_picked: '',
+      });
+    } else {
+      is_jars_picked_field_empty = true;
+      this.setState({
+        error_message_jars_picked: 'Please enter valid no. of jars picked',
+      });
+    }
     if (reg_ex.test(amount_paid)) {
-        is_amount_paid_field_empty = false;
-        this.setState({
-          error_message_amount_paid: '',
-        });
-      } else {
-        is_amount_paid_field_empty = true;
-        this.setState({
-          error_message_amount_paid: 'Please enter valid amount.',
-        });
-      }
+      is_amount_paid_field_empty = false;
+      this.setState({
+        error_message_amount_paid: '',
+      });
+    } else {
+      is_amount_paid_field_empty = true;
+      this.setState({
+        error_message_amount_paid: 'Please enter valid amount.',
+      });
+    }
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false) {
-        const newRecord = {
+      const newRecord = {
         majorDimension: 'ROWS',
         values: [
           [
@@ -172,7 +192,7 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-     var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
       fetch(url, {
         method: 'POST',
         body: JSON.stringify(newRecord),
@@ -190,7 +210,7 @@ export class ExistingCustomer extends Component {
           console.log('Success:', response);
           this.setState({
             DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
-            PickerValue: '',
+            query: '',
             jars_delivered: 0,
             jars_picked: 0,
             amount_paid: '',
@@ -200,9 +220,12 @@ export class ExistingCustomer extends Component {
     Keyboard.dismiss();
   }
 
+
   render() {
+    const { query } = this.state;
+    const dataSource = this.findFilm(query);
     return (
-      
+
       <View style={styles.container}>
         <View style={{ flexDirection: 'row' }}  >
           <Text styles={styles.header}>EXISTING CUSTOMER</Text>
@@ -226,16 +249,24 @@ export class ExistingCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Name</Text></View>
-          <View style={styles.textInput}>
-            <Picker
-              selectedValue={this.state.PickerValue}
-              onValueChange={(itemValue) => this.setState({
-                PickerValue: itemValue
-              })}>
-              {this.state.dataSource.map((l, i) => { return <Picker.Item value={l} label={this.state.dataSource[i][0]} key={i} /> })}
-            </Picker>
-          </View>
-
+          <View style={{ width: 200 }}>
+            <Autocomplete
+              autoCapitalize="none"
+              autoCorrect={false}
+              containerStyle={styles.autocompleteContainer}
+              data={dataSource}
+              defaultValue={query}
+              onChangeText={text => this.setState({ query: text })}
+              placeholder="Please enter name"
+              renderItem={({ name }) => (
+                <TouchableOpacity onPress={() => this.setState({ query: name })}>
+                  <Text style={styles.itemText}>
+                    {name}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+            </View>
         </View>
         <View style={styles.validating_form_textfield_name}>
           <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
@@ -243,10 +274,12 @@ export class ExistingCustomer extends Component {
 
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Delivered</Text></View>
-          <View style={styles.textInput}><TextInput
-            onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
-            {this.state.jars_delivered}
-          </TextInput></View>
+          <View style={styles.textInput}>
+            <TextInput
+              onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
+              {this.state.jars_delivered}
+            </TextInput>
+          </View>
         </View>
         <View style={styles.validating_form_textfield_jarsDelivered}>
           <Text style={styles.error_message_Text}>{this.state.error_message_jars_delivered}</Text>
@@ -271,21 +304,13 @@ export class ExistingCustomer extends Component {
         <View style={styles.validating_form_textfield_amount}>
           <Text style={styles.error_message_Text}>{this.state.error_message_amount_paid}</Text>
         </View>
-        {/* <View style={{ flexDirection: 'row' }}  >
-
-          <Text style={styles.success_message_Text}>{this.state.customer_updated_message}</Text>
-
-        </View> */}
-
         <View style={{ flexDirection: 'row' }}  >
 
           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
             <View style={styles.buttonSubmit}>
-            <Text style={styles.buttonText}>Submit</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </View>
           </TouchableOpacity>
-
-
         </View>
         {/* <View style={{ width:450,marginTop:240}}  >
           <Button
@@ -294,10 +319,7 @@ export class ExistingCustomer extends Component {
             color="deepskyblue"
            />
         </View> */}
-        </View >
-          
-        
-
+      </View >
     );
   }
 }
@@ -330,7 +352,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    padding:10
+    padding: 10
   },
   label: {
     fontSize: 20,
@@ -349,8 +371,6 @@ const styles = StyleSheet.create({
   },
   datePickerBox: {
     marginTop: 9,
-    borderColor: '#FF5722',
-    borderWidth: 0.5,
     padding: 0,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
@@ -384,6 +404,19 @@ const styles = StyleSheet.create({
   },
   validating_form_textfield_amount: {
     marginLeft: 75,
+  },
+  autocompleteContainer: {
+    flex: 1,
+    left: 0,
+   // height: 250,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 1,
+  },
+  itemText: {
+    fontSize: 15,
+    margin: 2
   }
 });
 

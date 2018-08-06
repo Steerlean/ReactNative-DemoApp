@@ -44,9 +44,7 @@ constructor(props) {
     .then((responseJson) => {
       var registered_phone_values = responseJson.values;
       for (let i = 0; i < registered_phone_values.length; i++) {
-          console.log(registered_phone_values[i]);
           if (registered_phone_values[i] == phone_no) {
-            console.log(registered_phone_values[i]);
             this.setState({ is_phone_registered: true, })
           }
         }
