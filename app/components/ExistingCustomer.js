@@ -20,7 +20,7 @@ export class ExistingCustomer extends Component {
     super();
     this.state = {
       PickerValue: '',
-      DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
+      DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
       DateHolder: null,
       dataSource: [],
       jars_delivered: 0,
@@ -209,7 +209,7 @@ export class ExistingCustomer extends Component {
 
           console.log('Success:', response);
           this.setState({
-            DateText: new Date().getFullYear() + "-" + ((new Date().getMonth()) + 1) + "-" + new Date().getDate(),
+            DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
             query: '',
             jars_delivered: 0,
             jars_picked: 0,
