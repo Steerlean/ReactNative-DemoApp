@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid,ScrollView,TouchableOpacity } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
-import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
-//import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
+import { spreadsheet_ID, API_key } from '../../Test_Properties';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
-
-
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -14,7 +10,7 @@ const instructions = Platform.select({
 });
 
 export class AddNewCustomer extends Component {
-constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       name: '',
@@ -29,21 +25,20 @@ constructor(props) {
       total: '',
     }
     this.onSelect = this.onSelect.bind(this)
-
   }
   onSelect(index, value) {
     this.setState({
       deposit_paid: `${value}`,
     })
   }
-  
+
   handleRequestForAllUniquePhoneNo(phone_no) {
     this.setState({ is_phone_registered: false, })
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/!C2%3AC?key='+API_key)
-    .then((response) => response.json())
-    .then((responseJson) => {
-      var registered_phone_values = responseJson.values;
-      for (let i = 0; i < registered_phone_values.length; i++) {
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/!C2%3AC?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        var registered_phone_values = responseJson.values;
+        for (let i = 0; i < registered_phone_values.length; i++) {
           if (registered_phone_values[i] == phone_no) {
             this.setState({ is_phone_registered: true, })
           }
@@ -53,7 +48,6 @@ constructor(props) {
         console.error(error);
       });
   }
-
   updateValue(text, field) {
     var name;
     var address;
@@ -78,7 +72,6 @@ constructor(props) {
       this.setState({
         total: text,
       })
-
     }
   }
   _onPressButton() {
@@ -86,8 +79,7 @@ constructor(props) {
     var address = "" + this.state.address;
     var phoneno = "" + this.state.phoneno;
     let reg_ex = /^[0-9]+$/;
-    var total=""+this.state.total;
-
+    var total = "" + this.state.total;
     var is_customername_field_empty = false;
     var is_customeraddress_field_empty = false;
     var is_customerphoneno_field_empty = false;
@@ -138,8 +130,8 @@ constructor(props) {
           this.setState({
             error_message_phoneno: 'MobileNo. already exists.',
           });
-        }else {
-           if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false && this.state.is_phone_registered == false) {
+        } else {
+          if (is_customername_field_empty == false && is_customeraddress_field_empty == false && is_customerphoneno_field_empty == false && this.state.is_phone_registered == false) {
             const newRecord = {
               majorDimension: 'ROWS',
               values: [
@@ -148,33 +140,37 @@ constructor(props) {
                   this.state.name,
                   this.state.phoneno,
                   this.state.address,
-                  "","","","","",
+                  "", "", "", "", "",
                   this.state.total,
                   this.state.deposit_paid,
-                  
                 ]
               ]
             };
-          var url = 'https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Customer_Details:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key='+API_key;
-           fetch(url, {
+            var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
+            fetch(url, {
               method: 'POST',
               body: JSON.stringify(newRecord),
               headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + this.props.accesstoken,
               }
-            })
-              .then(res => res.json())
-              .catch(error => console.error('Error:', error))
+            }).then(res => res.json())
+              .catch((error) => {
+                console.error('Error:', error)
+              })
               .then((response) => {
-                ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-                console.log('Success:', response);
-                this.setState({
-                  name: '',
-                  address: '',
-                  phoneno: '',
-                  total:'',
-                });
+                if (response.updates != null) {
+                  ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+                  console.log('Success:', response);
+                  this.setState({
+                    name: '',
+                    address: '',
+                    phoneno: '',
+                    total: '',
+                  });
+                } else if (response.error.status == 'UNAUTHENTICATED') {
+                  Alert.alert("Your session has expired please login again!!!")
+                }
               });
           }
           Keyboard.dismiss();
@@ -192,12 +188,9 @@ constructor(props) {
         error_message_total: '',
       });
     }
-
-
   }
   render() {
-      return (
-
+    return (
       <View style={styles.container}>
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
         <View style={{ flexDirection: 'row' }}  >
@@ -236,7 +229,6 @@ constructor(props) {
             {this.state.phoneno}
           </TextInput></View>
         </View>
-
         <View style={styles.validating_form_textfield_phone}>
           <Text style={styles.error_message_Text}>{this.state.error_message_phoneno}</Text>
         </View>
@@ -247,7 +239,6 @@ constructor(props) {
             onChangeText={(text) => this.updateValue(text, 'total')}>
             {this.state.total}
           </TextInput></View>
-
         </View>
         <View style={styles.validating_form_textfield_total}>
           <Text style={styles.error_message_Text}>{this.state.error_message_total}</Text>
@@ -256,10 +247,8 @@ constructor(props) {
           <View style={styles.label}><Text>Deposit Paid</Text></View>
           <View style={{ width: 200, height: 50, marginBottom: 50 }}>
             <RadioGroup
-
               size={15}
               thickness={2}
-
               selectedIndex={1}
               onSelect={(index, value) => this.onSelect(index, value)}>
               <RadioButton
@@ -272,22 +261,18 @@ constructor(props) {
                 color='black'>
                 <Text>No</Text>
               </RadioButton>
-
             </RadioGroup>
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
-
           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
             <View style={styles.buttonSubmit}>
-            <Text style={styles.buttonText}>Submit</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </View>
           </TouchableOpacity>
-
         </View>
-
       </View>
-      );
+    );
   }
 }
 
@@ -299,7 +284,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch'
   },
-
   header: {
     fontSize: 800,
     marginBottom: 40,
@@ -319,7 +303,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    padding:10
+    padding: 10
   },
   label: {
     fontSize: 20,
@@ -339,11 +323,6 @@ const styles = StyleSheet.create({
   error_message_Text: {
     color: 'red',
     marginLeft: 10,
-  },
-  success_message_Text: {
-    padding: 20,
-    color: 'green',
-    fontSize: 20,
   },
   validating_form_textfield_name: {
     marginLeft: 30,
@@ -365,9 +344,6 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 14,
   },
-
-
-
 });
 
 

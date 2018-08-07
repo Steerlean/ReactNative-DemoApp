@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid, ScrollView } from 'react-native';
-import { DatePickerDialog } from 'react-native-datepicker-dialog'
-import { GoogleSignin } from 'react-native-google-signin';
-import { createStackNavigator } from 'react-navigation';
+import { DatePickerDialog } from 'react-native-datepicker-dialog';
 import moment from 'moment';
 import Autocomplete from 'react-native-autocomplete-input';
-import { Web_CLient_ID, spreadsheet_ID, API_key } from '../../Test_Properties';
-//import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
+import { spreadsheet_ID, API_key } from '../../Test_Properties';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -19,7 +16,6 @@ export class ExistingCustomer extends Component {
   constructor() {
     super();
     this.state = {
-      PickerValue: '',
       DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
       DateHolder: null,
       dataSource: [],
@@ -51,14 +47,10 @@ export class ExistingCustomer extends Component {
   onDatePickedFunction = (date) => {
     this.setState({
       dobDate: date,
-      DateText: moment(date).format('YYYY-MM-DD')
+      DateText: moment(date).format('YYYY-MM-D')
     });
   }
   updateValue(text, field) {
-    var jars_delivered;
-    var jars_picked;
-    var amount_paid;
-
     if (field == 'name') {
       this.setState({
         selectName: text,
@@ -80,7 +72,7 @@ export class ExistingCustomer extends Component {
     }
   }
   componentDidMount() {
-    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details!B2%3AB?key=' + API_key)
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details!B3%3AB?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson);
@@ -92,7 +84,7 @@ export class ExistingCustomer extends Component {
         console.error(error);
       });
   }
-  findFilm(query) {
+  findRecord(query) {
     if (query === '') {
       return [];
     }
@@ -100,16 +92,14 @@ export class ExistingCustomer extends Component {
     for (let i = 0; i < this.state.dataSource.length; i++) {
       const obj = {};
       obj["name"] = this.state.dataSource[i][0];
-      dataSource2.push(obj);
+      if (obj.name != null) {
+        dataSource2.push(obj);
+      }
     }
     const regex = new RegExp(`${query.trim()}`, 'i');
     return dataSource2.filter((text) =>
       text.name.search(regex) >= 0
     );
-  }
-  _onPressSignoutButton() {
-    GoogleSignin.revokeAccess();
-    GoogleSignin.signOut();
   }
 
   _onPressButton() {
@@ -192,7 +182,7 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A886:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:F:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
       fetch(url, {
         method: 'POST',
         body: JSON.stringify(newRecord),
@@ -200,30 +190,31 @@ export class ExistingCustomer extends Component {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + this.props.accesstoken,
         }
-      })
-        .then(res => res.json())
+      }).then(res => res.json())
         .catch(error => console.error('Error:', error))
         .then((response) => {
+          if (response.updates != null) {
+            ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+            console.log('Success:', response);
+            this.setState({
+              DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+              query: '',
+              jars_delivered: 0,
+              jars_picked: 0,
+              amount_paid: '',
 
-          ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-
-          console.log('Success:', response);
-          this.setState({
-            DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
-            query: '',
-            jars_delivered: 0,
-            jars_picked: 0,
-            amount_paid: '',
-          });
+            });
+          } else if (response.error.status == 'UNAUTHENTICATED') {
+            Alert.alert("Your session has expired please login again!!!")
+          }
         });
     };
     Keyboard.dismiss();
   }
 
-
   render() {
     const { query } = this.state;
-    const dataSource = this.findFilm(query);
+    const dataSource = this.findRecord(query);
     return (
 
       <View style={styles.container}>
@@ -233,18 +224,12 @@ export class ExistingCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Date</Text></View>
           <View style={styles.textInput}>
-
             <TouchableOpacity onPress={this.DatePickerMainFunctionCall.bind(this)} >
-
               <View style={styles.datePickerBox}>
-
                 <Text style={styles.datePickerText}>{this.state.DateText}</Text>
-
               </View>
-
             </TouchableOpacity>
             <DatePickerDialog ref="DatePickerDialog" onDatePicked={this.onDatePickedFunction.bind(this)} />
-
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}  >
@@ -266,12 +251,11 @@ export class ExistingCustomer extends Component {
                 </TouchableOpacity>
               )}
             />
-            </View>
+          </View>
         </View>
         <View style={styles.validating_form_textfield_name}>
           <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
         </View>
-
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Delivered</Text></View>
           <View style={styles.textInput}>
@@ -305,20 +289,12 @@ export class ExistingCustomer extends Component {
           <Text style={styles.error_message_Text}>{this.state.error_message_amount_paid}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}  >
-
           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
             <View style={styles.buttonSubmit}>
               <Text style={styles.buttonText}>Submit</Text>
             </View>
           </TouchableOpacity>
         </View>
-        {/* <View style={{ width:450,marginTop:240}}  >
-          <Button
-            onPress={this._onPressSignoutButton.bind(this)}
-            title="SignOut"
-            color="deepskyblue"
-           />
-        </View> */}
       </View >
     );
   }
@@ -391,11 +367,6 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: 10,
   },
-  success_message_Text: {
-    padding: 20,
-    color: 'green',
-    fontSize: 20,
-  },
   validating_form_textfield_name: {
     marginLeft: 45,
   },
@@ -408,7 +379,6 @@ const styles = StyleSheet.create({
   autocompleteContainer: {
     flex: 1,
     left: 0,
-   // height: 250,
     position: 'absolute',
     right: 0,
     top: 0,

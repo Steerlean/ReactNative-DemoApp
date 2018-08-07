@@ -1,11 +1,9 @@
 import React from 'react';
-import { Button, View, Text, StyleSheet, Alert, Image, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, ToastAndroid } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import { Customer } from './app/components/Customer';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
-import { ExistingCustomer } from './app/components/ExistingCustomer';
 import { Web_CLient_ID, spreadsheet_ID, API_key } from './Test_Properties';
-//import { Web_CLient_ID, spreadsheet_ID, API_key } from './Release_Properties';
 
 export class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -16,7 +14,6 @@ export class HomeScreen extends React.Component {
     this.state = {
       is_email_registered: false,
     };
-
   }
   componentDidMount() {
     GoogleSignin.hasPlayServices({ autoResolve: true })
@@ -28,45 +25,25 @@ export class HomeScreen extends React.Component {
 
     GoogleSignin.configure({
       scopes: ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"], // what API you want to access on behalf of the user, default is email and profile
-     
-      //Testing-appbiofresh@gmail.com
+
       webClientId: Web_CLient_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
-     //Production-biofresh.hs@gmail.com
-     //webClientId:'1060192372477-8q378g6lc2ua4382uuli623qj51q3105.apps.googleusercontent.com',
-    }).then(() => {
 
-    });
-
+    }).then(() => { });
   }
+
   handleRequestForAllAuthorizedEmailList(email) {
-      //Testing-appbiofresh@gmail.com
-     return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+spreadsheet_ID+'/values/Registered_EmailID!A1%3AA?key='+API_key)
-  
-     //Production-biofresh.hs@gmail.com
-    // return fetch('https://sheets.googleapis.com/v4/spreadsheets/1fX-JTVl4V3l9bl30qL2wE-TJ-mI9wjxD1_gUUYJ9I1g/values/Registered_EmailID!A1%3AA?key=AIzaSyC1XLzcGsad9ji7aMNSdf5-9yliWeHinJQ')
-  
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Registered_EmailID!A1%3AA?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
         console.log(responseJson)
         var registered_email_values = responseJson.values;
-
         for (let i = 0; i < registered_email_values.length; i++) {
-
-
           if (registered_email_values[i] == email) {
-
-
             this.setState({
               is_email_registered: true,
-
             })
-
-
           }
         }
-
-
-
       })
       .catch((error) => {
         console.error(error);
@@ -74,10 +51,7 @@ export class HomeScreen extends React.Component {
   }
 
   googleLogin() {
-   
-
     GoogleSignin.signOut().then(() => {
-
       GoogleSignin.signIn().then((user) => {
         console.log(user);
         this.handleRequestForAllAuthorizedEmailList(user.email).then(() => {
@@ -90,7 +64,6 @@ export class HomeScreen extends React.Component {
             this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
             this.setState({
               is_email_registered: false,
-
             })
           } else {
             alert("You dont have permissions to access this app!!");
@@ -99,32 +72,21 @@ export class HomeScreen extends React.Component {
       }).catch((err) => {
         console.log("WRONG SIGNIN", err);
       })
-
-
     })
-
   }
   render() {
-
-
     return (
       <View style={styles.container}>
-
-
         <Image
           style={styles1.stretch}
-          source={require('./app/Images/biofresh_logo.png')}
-        />
+          source={require('./app/Images/biofresh_logo.png')} />
         <Text>SignIn with google</Text>
         <GoogleSigninButton
           style={{ width: 48, height: 48 }}
           size={GoogleSigninButton.Size.Icon}
           color={GoogleSigninButton.Color.Dark}
           onPress={
-            this.googleLogin.bind(this)
-
-          } />
-
+            this.googleLogin.bind(this)} />
       </View>
     );
   }
@@ -166,12 +128,5 @@ const styles1 = StyleSheet.create({
   stretch: {
     width: 200,
     height: 100
-  }
-});
-const styles2 = StyleSheet.create({
-  stretch: {
-    width: 150,
-    height: 150
-
   }
 });
