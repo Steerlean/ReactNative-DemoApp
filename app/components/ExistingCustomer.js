@@ -3,7 +3,7 @@ import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, Tou
 import { DatePickerDialog } from 'react-native-datepicker-dialog';
 import moment from 'moment';
 import Autocomplete from 'react-native-autocomplete-input';
-import { spreadsheet_ID, API_key,sheet_ID_GID } from '../../Test_Properties';
+import { spreadsheet_ID, API_key, sheet_ID_GID } from '../../Test_Properties';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -290,63 +290,63 @@ export class ExistingCustomer extends Component {
               cellNo: i + 1
             });
             break;
-           }
+          }
 
         }
         console.log("CellNO::" + this.state.cellNo)
-        if(!this.state.cellNo==''){
-        const newRecord = {
+        if (!this.state.cellNo == '') {
+          const newRecord = {
 
-          "requests": [
-            {
-              "deleteDimension": {
-                "range": {
-                  "sheetId":sheet_ID_GID,
-                  "dimension": "ROWS",
-                  "startIndex": (this.state.cellNo - 1),
-                  "endIndex": this.state.cellNo
+            "requests": [
+              {
+                "deleteDimension": {
+                  "range": {
+                    "sheetId": sheet_ID_GID,
+                    "dimension": "ROWS",
+                    "startIndex": (this.state.cellNo - 1),
+                    "endIndex": this.state.cellNo
+                  }
                 }
               }
-            }
-          ]
+            ]
 
-        };
-        
-        var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
-        console.log(JSON.stringify(newRecord))
-        console.log({
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + this.props.accesstoken,
-        })
-        fetch(url, {
-          method: 'POST',
-          body: JSON.stringify(newRecord),
-          headers: {
+          };
+
+          var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
+          console.log(JSON.stringify(newRecord))
+          console.log({
             "Content-Type": "application/json",
             "Authorization": "Bearer " + this.props.accesstoken,
-          }
-        })
-          .then(res => res.json())
-          .catch(error => console.error('Error:', error))
-          .then((response) => {
-            ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-            console.log('Success:', response);
-            this.setState({
-              cellNo: '',
-              DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
-              PickerValue: '',
-              jars_delivered: 0,
-              jars_picked: 0,
-              amount_paid: '',
-            });
+          })
+          fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(newRecord),
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + this.props.accesstoken,
+            }
+          })
+            .then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then((response) => {
+              ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+              console.log('Success:', response);
+              this.setState({
+                cellNo: '',
+                DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+                query: '',
+                jars_delivered: 0,
+                jars_picked: 0,
+                amount_paid: '',
+              });
 
-          });
-        }else{
-          Alert.alert("Name:"+name+" Date:"+date+" does not exists in sheet!!!");
+            });
+        } else {
+          Alert.alert("Name:" + name + " Date:" + date + " does not exists in sheet!!!");
 
         }
       });
-    
+
 
   }
   onViewPress() {
@@ -361,7 +361,7 @@ export class ExistingCustomer extends Component {
       .catch((error) => {
         console.error(error);
       });
-   
+
   }
 
   render() {
