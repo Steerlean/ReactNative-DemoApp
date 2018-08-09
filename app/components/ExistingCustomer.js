@@ -3,7 +3,7 @@ import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, Tou
 import { DatePickerDialog } from 'react-native-datepicker-dialog';
 import moment from 'moment';
 import Autocomplete from 'react-native-autocomplete-input';
-import { spreadsheet_ID, API_key } from '../../Test_Properties';
+import { spreadsheet_ID, API_key,sheet_ID_GID } from '../../Test_Properties';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -212,6 +212,143 @@ export class ExistingCustomer extends Component {
     };
     Keyboard.dismiss();
   }
+  _onPressUpdateButton() {
+    //Testing-appbiofresh@gmail.com
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:C?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        var name = "" + this.state.query;
+        var date = this.state.DateText;
+        var customer_records = responseJson.values;
+        for (let i = 3; i < customer_records.length; i++) {
+          if (customer_records[i][1] == date && customer_records[i][2] == name) {
+            this.setState({
+              cellNo: i + 1
+            });
+            break;
+          }
+
+        }
+        console.log("CellNO::" + this.state.cellNo)
+        if (!this.state.cellNo == '') {
+
+          const newRecord = {
+            majorDimension: 'ROWS',
+            values: [
+              [
+                this.state.jars_delivered,
+                this.state.jars_picked,
+                this.state.amount_paid,
+
+              ]
+            ]
+          };
+          return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!D' + this.state.cellNo + '%3AF' + this.state.cellNo + '?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CupdatedCells%2CupdatedColumns%2CupdatedData%2CupdatedRange%2CupdatedRows&key=' + API_key, {
+            method: 'PUT',
+            body: JSON.stringify(newRecord),
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + this.props.accesstoken,
+            }
+          })
+            .then(response => response.json())
+            .catch(error => console.error('Error:', error))
+            .then((response) => {
+
+              ToastAndroid.showWithGravity('Customer edited successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+
+              console.log('Success:', response);
+              this.setState({
+                cellNo: '',
+                DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+                query: '',
+                jars_delivered: 0,
+                jars_picked: 0,
+                amount_paid: '',
+              });
+            });
+        } else {
+          Alert.alert("Name:" + this.state.query + " Date:" + date + " does not exists in sheet!!!");
+
+        }
+
+      });
+
+
+  }
+  _onPressDeleteButton() {
+    //Testing-appbiofresh@gmail.com
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:D?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        var name = "" + this.state.query;
+        var date = this.state.DateText;
+        var customer_records = responseJson.values;
+        for (let i = 3; i < customer_records.length; i++) {
+          if (customer_records[i][1] == date && customer_records[i][2] == name) {
+            this.setState({
+              cellNo: i + 1
+            });
+            break;
+           }
+
+        }
+        console.log("CellNO::" + this.state.cellNo)
+        if(!this.state.cellNo==''){
+        const newRecord = {
+
+          "requests": [
+            {
+              "deleteDimension": {
+                "range": {
+                  "sheetId":sheet_ID_GID,
+                  "dimension": "ROWS",
+                  "startIndex": (this.state.cellNo - 1),
+                  "endIndex": this.state.cellNo
+                }
+              }
+            }
+          ]
+
+        };
+        
+        var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
+        console.log(JSON.stringify(newRecord))
+        console.log({
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + this.props.accesstoken,
+        })
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(newRecord),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + this.props.accesstoken,
+          }
+        })
+          .then(res => res.json())
+          .catch(error => console.error('Error:', error))
+          .then((response) => {
+            ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+            console.log('Success:', response);
+            this.setState({
+              cellNo: '',
+              DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+              PickerValue: '',
+              jars_delivered: 0,
+              jars_picked: 0,
+              amount_paid: '',
+            });
+
+          });
+        }else{
+          Alert.alert("Name:"+name+" Date:"+date+" does not exists in sheet!!!");
+
+        }
+      });
+    
+
+  }
   onViewPress() {
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/AddedBy?key=' + API_key)
       .then((response) => response.json())
@@ -224,7 +361,7 @@ export class ExistingCustomer extends Component {
       .catch((error) => {
         console.error(error);
       });
-    // {date:'2018-06-11',key: 'Devin Kumar',JarsDeliverd:5,JarsPicked:2,Amount:500},
+   
   }
 
   render() {
@@ -310,6 +447,16 @@ export class ExistingCustomer extends Component {
           <TouchableOpacity onPress={this._onPressButton.bind(this)}>
             <View style={styles.buttonSubmit}>
               <Text style={styles.buttonText}>Submit</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this._onPressUpdateButton.bind(this)}>
+            <View style={styles.buttonSubmit}>
+              <Text style={styles.buttonText}>Update</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this._onPressDeleteButton.bind(this)}>
+            <View style={styles.buttonSubmit}>
+              <Text style={styles.buttonText}>Delete</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={this.onViewPress.bind(this)}>
@@ -426,9 +573,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'aquamarine',
   }
 });
-
-
-
-
-
-
