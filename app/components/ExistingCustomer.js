@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid, ScrollView } from 'react-native';
+import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Picker, TouchableOpacity, Keyboard, ToastAndroid, ScrollView, FlatList } from 'react-native';
 import { DatePickerDialog } from 'react-native-datepicker-dialog';
 import moment from 'moment';
 import Autocomplete from 'react-native-autocomplete-input';
@@ -27,6 +27,7 @@ export class ExistingCustomer extends Component {
       error_message_jars_delivered: '',
       error_message_jars_picked: '',
       error_message_amount_paid: '',
+      history_records: [],
     }
   }
   DatePickerMainFunctionCall = () => {
@@ -211,6 +212,20 @@ export class ExistingCustomer extends Component {
     };
     Keyboard.dismiss();
   }
+  onViewPress() {
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/AddedBy?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log('Added By: ', responseJson);
+        this.setState({
+          history_records: responseJson.values,
+        }, function () { });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    // {date:'2018-06-11',key: 'Devin Kumar',JarsDeliverd:5,JarsPicked:2,Amount:500},
+  }
 
   render() {
     const { query } = this.state;
@@ -260,7 +275,8 @@ export class ExistingCustomer extends Component {
           <View style={styles.label}><Text>Jars Delivered</Text></View>
           <View style={styles.textInput}>
             <TextInput
-              onChangeText={(text) => this.updateValue(text, 'jars_delivered')}>
+              onChangeText={(text) => this.updateValue(text, 'jars_delivered')}
+              keyboardType="number-pad">
               {this.state.jars_delivered}
             </TextInput>
           </View>
@@ -271,7 +287,8 @@ export class ExistingCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Jars Picked</Text></View>
           <View style={styles.textInput}><TextInput
-            onChangeText={(text) => this.updateValue(text, 'jars_picked')}>
+            onChangeText={(text) => this.updateValue(text, 'jars_picked')}
+            keyboardType="number-pad">
             {this.state.jars_picked}
           </TextInput></View>
         </View>
@@ -281,7 +298,8 @@ export class ExistingCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Amount Paid</Text></View>
           <View style={styles.textInput}><TextInput
-            onChangeText={(text) => this.updateValue(text, 'amount_paid')}>
+            onChangeText={(text) => this.updateValue(text, 'amount_paid')}
+            keyboardType="number-pad">
             {this.state.amount_paid}
           </TextInput></View>
         </View>
@@ -294,6 +312,20 @@ export class ExistingCustomer extends Component {
               <Text style={styles.buttonText}>Submit</Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity onPress={this.onViewPress.bind(this)}>
+            <View style={styles.buttonSubmit}>
+              <Text style={styles.buttonText}>View History</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.container}>
+          <ScrollView horizontal={true}>
+            <FlatList
+              data={this.state.history_records}
+              renderItem={({ item }) => <Text style={styles.item}>{item[1]}   {item[2]}   {item[3]}   {item[4]}   {item[5]}</Text>}
+              ItemSeparatorComponent={() => <View style={{ width: 1, height: 1, backgroundColor: '' }} />}
+            />
+          </ScrollView>
         </View>
       </View >
     );
@@ -321,6 +353,8 @@ const styles = StyleSheet.create({
   },
   buttonSubmit: {
     marginTop: 10,
+    marginBottom: 10,
+    marginRight: 10,
     height: 40,
     width: 100,
     alignItems: 'center',
@@ -387,6 +421,9 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 15,
     margin: 2
+  },
+  item: {
+    backgroundColor: 'aquamarine',
   }
 });
 

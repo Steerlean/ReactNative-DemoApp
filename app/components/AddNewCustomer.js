@@ -225,7 +225,8 @@ export class AddNewCustomer extends Component {
           <View style={styles.label}><Text>Phone</Text></View>
           <View style={styles.textInput}><TextInput
             placeholder="PhoneNo"
-            onChangeText={(text) => this.updateValue(text, 'phoneno')}>
+            onChangeText={(text) => this.updateValue(text, 'phoneno')}
+            keyboardType="number-pad">
             {this.state.phoneno}
           </TextInput></View>
         </View>
@@ -236,7 +237,8 @@ export class AddNewCustomer extends Component {
           <View style={styles.label}><Text>Total</Text></View>
           <View style={styles.textInput}><TextInput
             placeholder="Total"
-            onChangeText={(text) => this.updateValue(text, 'total')}>
+            onChangeText={(text) => this.updateValue(text, 'total')}
+            keyboardType="number-pad">
             {this.state.total}
           </TextInput></View>
         </View>
