@@ -284,6 +284,7 @@ export class ExistingCustomer extends Component {
         var name = "" + this.state.query;
         var date = this.state.DateText;
         var customer_records = responseJson.values;
+        console.log(customer_records)
         for (let i = 3; i < customer_records.length; i++) {
           if (customer_records[i][1] == date && customer_records[i][2] == name) {
             this.setState({
@@ -350,13 +351,68 @@ export class ExistingCustomer extends Component {
 
   }
   onViewPress() {
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/AddedBy?key=' + API_key)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log('Added By: ', responseJson);
+    var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "' ";
+    var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
+    var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
+    fetch(URL)
+      .then((response) => {
+        var ResponseObjectnew = response._bodyText;
+        var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
+        var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
+        var response1 = JSON.parse(newrecord);
+        console.log(response1);
+        const customer_records = [];
+        for (let i = 0; i < response1.rows.length; i++) {
+          //console.log("Date "+response1.rows[i].c[0].f+" Name "+response1.rows[i].c[1].v+" Jars Delivered "+response1.rows[i].c[2].f+" Jars Picked "+response1.rows[i].c[3].f);
+          const obj = {};
+
+          if (response1.rows[i].c[0] != null) {
+            obj["Date"] = response1.rows[i].c[0].f+" | ";
+          } else {
+            obj["Date"] = "NA"+" |";
+          }
+
+          if (response1.rows[i].c[1] != null) {
+            obj["Name"] = response1.rows[i].c[1].v+" |";
+          } else {
+            obj["Name"] = "NA"+" |";
+          }
+
+          if (response1.rows[i].c[2] != null) {
+            obj["JarsDelivered"] = response1.rows[i].c[2].v+" |";
+          } else {
+            obj["JarsDelivered"] = "NA"+" |";
+          }
+
+          if (response1.rows[i].c[3] != null) {
+            obj["JarsPicked"] = response1.rows[i].c[3].v+" |";
+          } else {
+            obj["JarsPicked"] = "NA"+" |";
+          }
+
+          if (response1.rows[i].c[4].v != null) {
+            console.log("I"+response1.rows[i].c[4].v);
+            obj["AmountPaid"] = response1.rows[i].c[4].v+" |";
+          }else {
+            console.log("O"+response1.rows[i].c[4]);
+            obj["AmountPaid"] = "NA"+" |";
+          }
+          
+          customer_records.push(obj);
+
+        }
         this.setState({
-          history_records: responseJson.values,
-        }, function () { });
+          history_records: customer_records,
+
+        });
+        console.log(this.state.history_records[0].Date);
+
+
+
+      })
+      .then((response) => {
+        // console.log('Added By: ', responseJson);
+
       })
       .catch((error) => {
         console.error(error);
@@ -459,17 +515,19 @@ export class ExistingCustomer extends Component {
               <Text style={styles.buttonText}>Delete</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={this.onViewPress.bind(this)}>
-            <View style={styles.buttonSubmit}>
+          </View>
+      <View style={{ flexDirection: 'row'}}  >
+      <TouchableOpacity onPress={this.onViewPress.bind(this)}>
+            <View style={styles.buttonView}>
               <Text style={styles.buttonText}>View History</Text>
             </View>
           </TouchableOpacity>
-        </View>
+      </View>
         <View style={styles.container}>
           <ScrollView horizontal={true}>
             <FlatList
               data={this.state.history_records}
-              renderItem={({ item }) => <Text style={styles.item}>{item[1]}   {item[2]}   {item[3]}   {item[4]}   {item[5]}</Text>}
+              renderItem={({ item }) => <Text style={styles.item}>{item.Date}  {item.Name}  {item.JarsDelivered}  {item.JarsPicked}  {item.AmountPaid}</Text>}
               ItemSeparatorComponent={() => <View style={{ width: 1, height: 1, backgroundColor: '' }} />}
             />
           </ScrollView>
@@ -500,10 +558,18 @@ const styles = StyleSheet.create({
   },
   buttonSubmit: {
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 5,
     marginRight: 10,
     height: 40,
     width: 100,
+    alignItems: 'center',
+    backgroundColor: '#841584'
+  },
+  buttonView: {
+    marginBottom: 5,
+    marginRight: 10,
+    height: 40,
+    width: 320,
     alignItems: 'center',
     backgroundColor: '#841584'
   },
@@ -570,6 +636,6 @@ const styles = StyleSheet.create({
     margin: 2
   },
   item: {
-    backgroundColor: 'aquamarine',
+    backgroundColor: 'white',
   }
 });
