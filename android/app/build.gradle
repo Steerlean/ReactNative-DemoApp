@@ -148,6 +148,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-google-places')
     compile project(':react-native-google-signin')
    
     compile 'com.google.firebase:firebase-core:16.0.0'

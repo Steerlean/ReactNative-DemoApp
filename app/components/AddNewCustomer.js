@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
 import { spreadsheet_ID, API_key } from '../../Test_Properties';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
+import Autocomplete from 'react-native-autocomplete-input';
+import RNGooglePlaces from 'react-native-google-places';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -23,9 +25,17 @@ export class AddNewCustomer extends Component {
       is_phone_registered: false,
       deposit_paid: '',
       total: '',
+      query: '',
+      address_predictions:[],
+      hideAutoList:false,
     }
     this.onSelect = this.onSelect.bind(this)
   }
+  // componentDidMount() {
+  //   RNGooglePlaces.getCurrentPlace()
+  //   .then((results) => console.log('CurrentPlace: ',results))
+  //   .catch((error) => console.log(error.message));
+  // }
   onSelect(index, value) {
     this.setState({
       deposit_paid: `${value}`,
@@ -76,7 +86,7 @@ export class AddNewCustomer extends Component {
   }
   _onPressButton() {
     var name = "" + this.state.name;
-    var address = "" + this.state.address;
+    var address = this.state.query;
     var phoneno = "" + this.state.phoneno;
     let reg_ex = /^[0-9]+$/;
     var total = "" + this.state.total;
@@ -139,7 +149,7 @@ export class AddNewCustomer extends Component {
                   this.props.username,
                   this.state.name,
                   this.state.phoneno,
-                  this.state.address,
+                  address,
                   "", "", "", "", "",
                   this.state.total,
                   this.state.deposit_paid,
@@ -164,9 +174,10 @@ export class AddNewCustomer extends Component {
                   console.log('Success:', response);
                   this.setState({
                     name: '',
-                    address: '',
+                    query: '',
                     phoneno: '',
                     total: '',
+                    hideAutoList:false
                   });
                 } else if (response.error.status == 'UNAUTHENTICATED') {
                   Alert.alert("Your session has expired please login again!!!")
@@ -189,7 +200,34 @@ export class AddNewCustomer extends Component {
       });
     }
   }
+  findRecord(query) {
+    if (query === '') {
+      return [];
+    }
+    RNGooglePlaces.getAutocompletePredictions(query,{
+      country:"IN",	  
+      latitude: 18.5204,
+      longitude: 73.8567,
+      radius: 100
+    }).then((response) => {
+      console.log(response);
+      this.setState({
+        address_predictions:response
+      });
+    }
+  ).catch((error) => {
+        console.error(error);
+    });
+    const regex = new RegExp(`${query.trim()}`, 'i');
+    return this.state.address_predictions.filter((address) =>
+      address.fullText.search(regex) >= 0
+    );
+  }
   render() {
+    const { query } = this.state;
+    const address_predictions = this.findRecord(query);
+    console.log('address_predictions : '+address_predictions);
+
     return (
       <View style={styles.container}>
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
@@ -207,15 +245,34 @@ export class AddNewCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
-          <View style={styles.textInput}>
-            <ScrollView>
+          <View style={{ width: 200 }}>
+            {/* <ScrollView>
               <TextInput
                 multiline={true}
                 placeholder="Address"
                 onChangeText={(text) => this.updateValue(text, 'address')}>
                 {this.state.address}
               </TextInput>
-            </ScrollView>
+            </ScrollView> */}
+            <Autocomplete
+              autoCapitalize="none"
+              autoCorrect={false}
+              containerStyle={styles.autocompleteContainer}
+              data={address_predictions}
+              defaultValue={query}
+              onChangeText={text => this.setState({ query: text,hideAutoList:false })}
+              hideResults={this.state.hideAutoList}
+              placeholder="Please enter address"
+              renderItem={({ fullText }) => (
+                <TouchableOpacity onPress={() => this.setState(
+                                                     { query: fullText,
+                                                       hideAutoList:true })} >
+                  <Text style={styles.itemText}>
+                    {fullText}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
         <View style={styles.validating_form_textfield_address}>
@@ -346,6 +403,18 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 14,
   },
+  autocompleteContainer: {
+    flex: 1,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 1,
+  },
+  itemText: {
+    fontSize: 15,
+    margin: 2
+  }
 });
 
 
