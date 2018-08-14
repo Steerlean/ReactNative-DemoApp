@@ -212,8 +212,36 @@ export class ExistingCustomer extends Component {
     };
     Keyboard.dismiss();
   }
+  _GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, date) {
+    this.setState({
+      query: name,
+      jars_delivered: 0,
+      jars_picked: 0,
+      amount_paid: '',
+    })
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:G?key=' + API_key)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        var customer_records = responseJson.values;
+        for (let i = 3; i < customer_records.length; i++) {
+
+          if (customer_records[i][1] == date && customer_records[i][2] == name) {
+            this.setState({
+              jars_delivered: customer_records[i][3],
+              jars_picked: customer_records[i][4],
+              amount_paid: customer_records[i][5],
+            });
+
+            break;
+          }
+
+
+        }
+
+      });
+  }
+
   _onPressUpdateButton() {
-    //Testing-appbiofresh@gmail.com
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:C?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -254,18 +282,22 @@ export class ExistingCustomer extends Component {
             .then(response => response.json())
             .catch(error => console.error('Error:', error))
             .then((response) => {
+              console.log(response)
+              if (response.updatedRows != null) {
+                ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
 
-              ToastAndroid.showWithGravity('Customer edited successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-
-              console.log('Success:', response);
-              this.setState({
-                cellNo: '',
-                DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
-                query: '',
-                jars_delivered: 0,
-                jars_picked: 0,
-                amount_paid: '',
-              });
+                console.log('Success:', response);
+                this.setState({
+                  cellNo: '',
+                  DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+                  query: '',
+                  jars_delivered: 0,
+                  jars_picked: 0,
+                  amount_paid: '',
+                });
+              } else if (response.error.status == 'UNAUTHENTICATED') {
+                Alert.alert("Your session has expired please login again!!!")
+              }
             });
         } else {
           Alert.alert("Name:" + this.state.query + " Date:" + date + " does not exists in sheet!!!");
@@ -277,7 +309,6 @@ export class ExistingCustomer extends Component {
 
   }
   _onPressDeleteButton() {
-    //Testing-appbiofresh@gmail.com
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:D?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -315,10 +346,6 @@ export class ExistingCustomer extends Component {
 
           var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
           console.log(JSON.stringify(newRecord))
-          console.log({
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + this.props.accesstoken,
-          })
           fetch(url, {
             method: 'POST',
             body: JSON.stringify(newRecord),
@@ -330,16 +357,21 @@ export class ExistingCustomer extends Component {
             .then(res => res.json())
             .catch(error => console.error('Error:', error))
             .then((response) => {
-              ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-              console.log('Success:', response);
-              this.setState({
-                cellNo: '',
-                DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
-                query: '',
-                jars_delivered: 0,
-                jars_picked: 0,
-                amount_paid: '',
-              });
+              if (response.replies != null) {
+                ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+                console.log('Success:', response);
+                this.setState({
+                  cellNo: '',
+                  DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
+                  query: '',
+                  jars_delivered: 0,
+                  jars_picked: 0,
+                  amount_paid: '',
+                });
+              } else if (response.error.status == 'UNAUTHENTICATED') {
+                Alert.alert("Your session has expired please login again!!!")
+              }
+
 
             });
         } else {
@@ -354,6 +386,7 @@ export class ExistingCustomer extends Component {
     var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "' ";
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
+    console.log(URL)
     fetch(URL)
       .then((response) => {
         var ResponseObjectnew = response._bodyText;
@@ -362,56 +395,63 @@ export class ExistingCustomer extends Component {
         var response1 = JSON.parse(newrecord);
         console.log(response1);
         const customer_records = [];
-        for (let i = 0; i < response1.rows.length; i++) {
-          //console.log("Date "+response1.rows[i].c[0].f+" Name "+response1.rows[i].c[1].v+" Jars Delivered "+response1.rows[i].c[2].f+" Jars Picked "+response1.rows[i].c[3].f);
-          const obj = {};
+        if (!response1.rows.length == 0) {
+          for (let i = 0; i < response1.rows.length; i++) {
+            const obj = {};
 
-          if (response1.rows[i].c[0] != null) {
-            obj["Date"] = response1.rows[i].c[0].f+" | ";
-          } else {
-            obj["Date"] = "NA"+" |";
-          }
+            if (response1.rows[i].c[0] != null) {
+              obj["Date"] = response1.rows[i].c[0].f + " | ";
+            } else {
+              obj["Date"] = "NA" + " |";
+            }
 
-          if (response1.rows[i].c[1] != null) {
-            obj["Name"] = response1.rows[i].c[1].v+" |";
-          } else {
-            obj["Name"] = "NA"+" |";
-          }
+            if (response1.rows[i].c[1] != null) {
+              obj["Name"] = response1.rows[i].c[1].v + " |";
+            } else {
+              obj["Name"] = "NA" + " |";
+            }
 
-          if (response1.rows[i].c[2] != null) {
-            obj["JarsDelivered"] = response1.rows[i].c[2].v+" |";
-          } else {
-            obj["JarsDelivered"] = "NA"+" |";
-          }
+            if (response1.rows[i].c[2] != null) {
+              obj["JarsDelivered"] = response1.rows[i].c[2].v + " |";
+            } else {
+              obj["JarsDelivered"] = "NA" + " |";
+            }
 
-          if (response1.rows[i].c[3] != null) {
-            obj["JarsPicked"] = response1.rows[i].c[3].v+" |";
-          } else {
-            obj["JarsPicked"] = "NA"+" |";
-          }
+            if (response1.rows[i].c[3] != null) {
+              obj["JarsPicked"] = response1.rows[i].c[3].v + " |";
+            } else {
+              obj["JarsPicked"] = "NA" + " |";
+            }
 
-          if (response1.rows[i].c[4].v != null) {
-            console.log("I"+response1.rows[i].c[4].v);
-            obj["AmountPaid"] = response1.rows[i].c[4].v+" |";
-          }else {
-            console.log("O"+response1.rows[i].c[4]);
-            obj["AmountPaid"] = "NA"+" |";
+            if (response1.rows[i].c[4].v != null) {
+
+              obj["AmountPaid"] = response1.rows[i].c[4].v;
+            } else {
+
+              obj["AmountPaid"] = "NA";
+            }
+
+            customer_records.push(obj);
+
           }
-          
-          customer_records.push(obj);
+        } else {
+          const obj1 = {};
+          obj1["Date"] = 'No records found';
+          obj1["Name"] = '';
+          obj1["JarsDelivered"] = '';
+          obj1["JarsPicked"] = '';
+          obj1["AmountPaid"] = '';
+
+          customer_records.push(obj1);
 
         }
         this.setState({
           history_records: customer_records,
 
         });
-        console.log(this.state.history_records[0].Date);
-
-
-
       })
       .then((response) => {
-        // console.log('Added By: ', responseJson);
+     
 
       })
       .catch((error) => {
@@ -452,7 +492,7 @@ export class ExistingCustomer extends Component {
               onChangeText={text => this.setState({ query: text })}
               placeholder="Please enter name"
               renderItem={({ name }) => (
-                <TouchableOpacity onPress={() => this.setState({ query: name })}>
+                <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, this.state.DateText)}>
                   <Text style={styles.itemText}>
                     {name}
                   </Text>
@@ -515,14 +555,14 @@ export class ExistingCustomer extends Component {
               <Text style={styles.buttonText}>Delete</Text>
             </View>
           </TouchableOpacity>
-          </View>
-      <View style={{ flexDirection: 'row'}}  >
-      <TouchableOpacity onPress={this.onViewPress.bind(this)}>
+        </View>
+        <View style={{ flexDirection: 'row' }}  >
+          <TouchableOpacity onPress={this.onViewPress.bind(this)}>
             <View style={styles.buttonView}>
               <Text style={styles.buttonText}>View History</Text>
             </View>
           </TouchableOpacity>
-      </View>
+        </View>
         <View style={styles.container}>
           <ScrollView horizontal={true}>
             <FlatList
