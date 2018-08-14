@@ -25,17 +25,23 @@ export class AddNewCustomer extends Component {
       is_phone_registered: false,
       deposit_paid: '',
       total: '',
-      query: '',
-      address_predictions:[],
+      query: "",
+      address_predictions:["Pune"],
       hideAutoList:false,
     }
     this.onSelect = this.onSelect.bind(this)
   }
-  // componentDidMount() {
-  //   RNGooglePlaces.getCurrentPlace()
-  //   .then((results) => console.log('CurrentPlace: ',results))
-  //   .catch((error) => console.log(error.message));
-  // }
+  componentDidMount() {
+    RNGooglePlaces.getCurrentPlace()
+    .then((results) => {
+      console.log('Current Location:',results);
+      this.setState({
+        query:results[0].name.replace(/\(|\)/g,'')
+      });
+      console.log('Current Location string:',this.state.query);
+  })
+    .catch((error) => console.log(error.message));
+  }
   onSelect(index, value) {
     this.setState({
       deposit_paid: `${value}`,
@@ -174,7 +180,6 @@ export class AddNewCustomer extends Component {
                   console.log('Success:', response);
                   this.setState({
                     name: '',
-                    query: '',
                     phoneno: '',
                     total: '',
                     hideAutoList:false
@@ -204,24 +209,24 @@ export class AddNewCustomer extends Component {
     if (query === '') {
       return [];
     }
-    RNGooglePlaces.getAutocompletePredictions(query,{
-      country:"IN",	  
-      latitude: 18.5204,
-      longitude: 73.8567,
-      radius: 100
-    }).then((response) => {
-      console.log(response);
-      this.setState({
-        address_predictions:response
-      });
-    }
-  ).catch((error) => {
-        console.error(error);
-    });
-    const regex = new RegExp(`${query.trim()}`, 'i');
-    return this.state.address_predictions.filter((address) =>
-      address.fullText.search(regex) >= 0
-    );
+  //   RNGooglePlaces.getAutocompletePredictions(query,{
+  //     country:"IN",	  
+  //     latitude: 18.5204,
+  //     longitude: 73.8567,
+  //     radius: 100
+  //   }).then((response) => {
+  //     console.log(response);
+  //     this.setState({
+  //       address_predictions:response
+  //     });
+  //   }
+  // ).catch((error) => {
+  //       console.error(error);
+  //   });
+  //   const regex = new RegExp(`${query.trim()}`, 'i');
+  //   return this.state.address_predictions.filter((address) =>
+  //     address.fullText.search(regex) >= 0
+  //   );
   }
   render() {
     const { query } = this.state;
@@ -246,14 +251,6 @@ export class AddNewCustomer extends Component {
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
           <View style={{ width: 200 }}>
-            {/* <ScrollView>
-              <TextInput
-                multiline={true}
-                placeholder="Address"
-                onChangeText={(text) => this.updateValue(text, 'address')}>
-                {this.state.address}
-              </TextInput>
-            </ScrollView> */}
             <Autocomplete
               autoCapitalize="none"
               autoCorrect={false}
