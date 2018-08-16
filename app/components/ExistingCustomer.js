@@ -170,6 +170,8 @@ export class ExistingCustomer extends Component {
       });
     }
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false) {
+      
+    
       const newRecord = {
         majorDimension: 'ROWS',
         values: [
@@ -183,7 +185,10 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:F:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
+      console.log(newRecord)
+      var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:F:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
+      
+      console.log(url)
       fetch(url, {
         method: 'POST',
         body: JSON.stringify(newRecord),
@@ -271,7 +276,7 @@ export class ExistingCustomer extends Component {
               ]
             ]
           };
-          return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!D' + this.state.cellNo + '%3AF' + this.state.cellNo + '?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=RAW&fields=spreadsheetId%2CupdatedCells%2CupdatedColumns%2CupdatedData%2CupdatedRange%2CupdatedRows&key=' + API_key, {
+          return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!D' + this.state.cellNo + '%3AF' + this.state.cellNo + '?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CupdatedCells%2CupdatedColumns%2CupdatedData%2CupdatedRange%2CupdatedRows&key=' + API_key, {
             method: 'PUT',
             body: JSON.stringify(newRecord),
             headers: {
@@ -383,7 +388,7 @@ export class ExistingCustomer extends Component {
 
   }
   onViewPress() {
-    var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "' ";
+    var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "'";
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
     console.log(URL)
