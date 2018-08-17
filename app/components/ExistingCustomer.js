@@ -103,6 +103,163 @@ export class ExistingCustomer extends Component {
       text.name.search(regex) >= 0
     );
   }
+  _POST_REQUEST(newRecord) {
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A:B:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(newRecord),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + this.props.accesstoken,
+      }
+    }).then(res => res.json())
+      .catch(error => console.error('Error:', error))
+      .then((response) => {
+        if (response.updates != null) {
+          console.log('Success:', response);
+        } else if (response.error.status == 'UNAUTHENTICATED') {
+          Alert.alert("Your session has expired please login again!!!")
+        }
+      });
+
+  }
+  _PUT_REQUEST(newRecord) {
+    var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A' + this.state.cellNo + '%3AB' + this.state.cellNo + '?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CupdatedCells%2CupdatedColumns%2CupdatedData%2CupdatedRange%2CupdatedRows&key=' + API_key;
+    console.log("URL", url);
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(newRecord),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + this.props.accesstoken,
+      }
+    }).then(res => res.json())
+      .catch(error => console.error('Error:', error))
+      .then((response) => {
+        if (response.updates != null) {
+          console.log('Success:', response);
+        } else if (response.error.status == 'UNAUTHENTICATED') {
+          Alert.alert("Your session has expired please login again!!!")
+        }
+      });
+
+
+  }
+
+  _GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_POST(date) {
+    var SQL_QUERY = "SELECT SUM(D) where B = date'" + date + "'";
+    var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
+    var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
+    fetch(URL)
+      .then((response) => {
+        var ResponseObjectnew = response._bodyText;
+        var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
+        var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
+        var response1 = JSON.parse(newrecord);
+        let newRecord = {};
+        if (!response1.rows.length == 0) {
+          newRecord = {
+            majorDimension: 'ROWS',
+            values: [
+              [
+                date,
+                response1.rows[0].c[0].v,
+
+              ]
+            ]
+          };
+        } else {
+          newRecord = {
+            majorDimension: 'ROWS',
+            values: [
+              [
+                date,
+                this.state.jars_delivered,
+
+              ]
+            ]
+          };
+
+        }
+        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A:B?key=' + API_key)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            var customer_records = responseJson.values;
+            console.log("CUSTOMER_RECORDS::", customer_records);
+            if (typeof customer_records === 'undefined') {
+              this._POST_REQUEST(newRecord);
+            } else {
+              this.setState({
+                cellNo: '',
+              });
+              for (let i = 0; i < customer_records.length; i++) {
+                if (customer_records[i][0] == date) {
+                  this.setState({
+                    cellNo: i + 1
+                  });
+                  break;
+                }
+              }
+              console.log("CellNoSubmit::", this.state.cellNo);
+            }
+            console.log("NewRecordNOTNULL::", newRecord);
+            if (this.state.cellNo == '') {
+              this._POST_REQUEST(newRecord);
+            }
+            else {
+              this._PUT_REQUEST(newRecord);
+            }
+          });
+      });
+  }
+  _GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_PUT(date, buttonUpdateDelete) {
+    var SQL_QUERY = "SELECT SUM(D) where B = date'" + date + "'";
+    var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
+    var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
+    fetch(URL)
+      .then((response) => {
+        var ResponseObjectnew = response._bodyText;
+        var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
+        var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
+        var response1 = JSON.parse(newrecord);
+        const newRecord = {
+          majorDimension: 'ROWS',
+          values: [
+            [
+              date,
+              response1.rows[0].c[0].v,
+
+            ]
+          ]
+        };
+        return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A:B?key=' + API_key)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            var customer_records = responseJson.values;
+            if (typeof customer_records === 'undefined' && buttonUpdateDelete == 'update') {
+              this._POST_REQUEST(newRecord);
+            } else {
+              this.setState({
+                cellNo: '',
+              });
+              for (let i = 0; i < customer_records.length; i++) {
+                if (customer_records[i][0] == date) {
+                  this.setState({
+                    cellNo: i + 1
+                  });
+                  break;
+                }
+              }
+              console.log("CellNoSubmit::", this.state.cellNo);
+            }
+            if (!this.state.cellNo == '') {
+              this._PUT_REQUEST(newRecord);
+            } else {
+              this._POST_REQUEST(newRecord);
+            }
+          });
+      });
+  }
 
   _onPressButton() {
     var name = this.state.query;
@@ -171,8 +328,8 @@ export class ExistingCustomer extends Component {
       });
     }
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false) {
-      
-    
+
+
       const newRecord = {
         majorDimension: 'ROWS',
         values: [
@@ -188,7 +345,7 @@ export class ExistingCustomer extends Component {
       };
       console.log(newRecord)
       var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:F:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
-      
+
       console.log(url)
       fetch(url, {
         method: 'POST',
@@ -201,8 +358,9 @@ export class ExistingCustomer extends Component {
         .catch(error => console.error('Error:', error))
         .then((response) => {
           if (response.updates != null) {
-            ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
             console.log('Success:', response);
+            var date = this.state.DateText;
+            this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_POST(date);
             this.setState({
               DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
               query: '',
@@ -210,6 +368,7 @@ export class ExistingCustomer extends Component {
               jars_picked: 0,
               amount_paid: '',
             });
+            ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
           } else if (response.error.status == 'UNAUTHENTICATED') {
             Alert.alert("Your session has expired please login again!!!")
           }
@@ -241,7 +400,8 @@ export class ExistingCustomer extends Component {
           }
         }
       });
-  }
+    }
+
 
   _onPressUpdateButton() {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:C?key=' + API_key)
@@ -250,6 +410,9 @@ export class ExistingCustomer extends Component {
         var name = "" + this.state.query;
         var date = this.state.DateText;
         var customer_records = responseJson.values;
+        this.setState({
+          cellNo: '',
+        });
         for (let i = 3; i < customer_records.length; i++) {
           if (customer_records[i][1] == date && customer_records[i][2] == name) {
             this.setState({
@@ -259,7 +422,7 @@ export class ExistingCustomer extends Component {
           }
 
         }
-        console.log("CellNO::" + this.state.cellNo)
+        console.log("CellNO3::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
 
           const newRecord = {
@@ -286,9 +449,10 @@ export class ExistingCustomer extends Component {
             .then((response) => {
               console.log(response)
               if (response.updatedRows != null) {
-                ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-
                 console.log('Success:', response);
+                var date = this.state.DateText;
+                var update = "update";
+                this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_PUT(date, update);
                 this.setState({
                   cellNo: '',
                   DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
@@ -297,6 +461,8 @@ export class ExistingCustomer extends Component {
                   jars_picked: 0,
                   amount_paid: '',
                 });
+                ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
+
               } else if (response.error.status == 'UNAUTHENTICATED') {
                 Alert.alert("Your session has expired please login again!!!")
               }
@@ -325,7 +491,6 @@ export class ExistingCustomer extends Component {
             });
             break;
           }
-
         }
         console.log("CellNO::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
@@ -347,7 +512,6 @@ export class ExistingCustomer extends Component {
           };
 
           var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
-          console.log(JSON.stringify(newRecord))
           fetch(url, {
             method: 'POST',
             body: JSON.stringify(newRecord),
@@ -360,8 +524,10 @@ export class ExistingCustomer extends Component {
             .catch(error => console.error('Error:', error))
             .then((response) => {
               if (response.replies != null) {
-                ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
                 console.log('Success:', response);
+                var date = this.state.DateText;
+                var deLete = 'delete';
+                this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_PUT(date, deLete);
                 this.setState({
                   cellNo: '',
                   DateText: new Date().getFullYear() + "-" + ('0' + (new Date().getMonth() + 1)).slice(-2) + "-" + new Date().getDate(),
@@ -370,6 +536,7 @@ export class ExistingCustomer extends Component {
                   jars_picked: 0,
                   amount_paid: '',
                 });
+                ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
               } else if (response.error.status == 'UNAUTHENTICATED') {
                 Alert.alert("Your session has expired please login again!!!")
               }
@@ -453,7 +620,7 @@ export class ExistingCustomer extends Component {
         });
       })
       .then((response) => {
-     
+
 
       })
       .catch((error) => {
