@@ -28,6 +28,7 @@ export class ExistingCustomer extends Component {
       error_message_jars_picked: '',
       error_message_amount_paid: '',
       history_records: [],
+      hideAutoList:false,
     }
   }
   DatePickerMainFunctionCall = () => {
@@ -208,7 +209,6 @@ export class ExistingCustomer extends Component {
               jars_delivered: 0,
               jars_picked: 0,
               amount_paid: '',
-
             });
           } else if (response.error.status == 'UNAUTHENTICATED') {
             Alert.alert("Your session has expired please login again!!!")
@@ -223,6 +223,7 @@ export class ExistingCustomer extends Component {
       jars_delivered: 0,
       jars_picked: 0,
       amount_paid: '',
+      hideAutoList:true,
     })
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:G?key=' + API_key)
       .then((response) => response.json())
@@ -236,13 +237,9 @@ export class ExistingCustomer extends Component {
               jars_picked: customer_records[i][4],
               amount_paid: customer_records[i][5],
             });
-
             break;
           }
-
-
         }
-
       });
   }
 
@@ -494,7 +491,8 @@ export class ExistingCustomer extends Component {
               containerStyle={styles.autocompleteContainer}
               data={dataSource}
               defaultValue={query}
-              onChangeText={text => this.setState({ query: text })}
+              hideResults={this.state.hideAutoList}
+              onChangeText={text => this.setState({ query: text,hideAutoList:false,})}
               placeholder="Please enter name"
               renderItem={({ name }) => (
                 <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, this.state.DateText)}>
@@ -505,6 +503,7 @@ export class ExistingCustomer extends Component {
               )}
             />
           </View>
+
         </View>
         <View style={styles.validating_form_textfield_name}>
           <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
 import { spreadsheet_ID, API_key } from '../../Test_Properties';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
-import Autocomplete from 'react-native-autocomplete-input';
 import RNGooglePlaces from 'react-native-google-places';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -16,7 +15,6 @@ export class AddNewCustomer extends Component {
     super(props);
     this.state = {
       name: '',
-      address: '',
       phoneno: '',
       error_message_name: '',
       error_message_address: '',
@@ -26,7 +24,6 @@ export class AddNewCustomer extends Component {
       deposit_paid: '',
       total: '',
       query: "",
-      address_predictions:["Pune"],
       hideAutoList:false,
     }
     this.onSelect = this.onSelect.bind(this)
@@ -76,7 +73,7 @@ export class AddNewCustomer extends Component {
     } else if (field == 'address') {
 
       this.setState({
-        address: text,
+        query: text,
       })
 
     } else if (field == 'phoneno') {
@@ -205,33 +202,8 @@ export class AddNewCustomer extends Component {
       });
     }
   }
-  findRecord(query) {
-    if (query === '') {
-      return [];
-    }
-  //   RNGooglePlaces.getAutocompletePredictions(query,{
-  //     country:"IN",	  
-  //     latitude: 18.5204,
-  //     longitude: 73.8567,
-  //     radius: 100
-  //   }).then((response) => {
-  //     console.log(response);
-  //     this.setState({
-  //       address_predictions:response
-  //     });
-  //   }
-  // ).catch((error) => {
-  //       console.error(error);
-  //   });
-  //   const regex = new RegExp(`${query.trim()}`, 'i');
-  //   return this.state.address_predictions.filter((address) =>
-  //     address.fullText.search(regex) >= 0
-  //   );
-  }
+  
   render() {
-    const { query } = this.state;
-    const address_predictions = this.findRecord(query);
-    console.log('address_predictions : '+address_predictions);
 
     return (
       <View style={styles.container}>
@@ -250,26 +222,17 @@ export class AddNewCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Address</Text></View>
-          <View style={{ width: 200 }}>
-            <Autocomplete
-              autoCapitalize="none"
-              autoCorrect={false}
-              containerStyle={styles.autocompleteContainer}
-              data={address_predictions}
-              defaultValue={query}
-              onChangeText={text => this.setState({ query: text,hideAutoList:false })}
-              hideResults={this.state.hideAutoList}
-              placeholder="Please enter address"
-              renderItem={({ fullText }) => (
-                <TouchableOpacity onPress={() => this.setState(
-                                                     { query: fullText,
-                                                       hideAutoList:true })} >
-                  <Text style={styles.itemText}>
-                    {fullText}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
+          <View style={styles.textInput}>
+          <ScrollView>
+
+          <TextInput
+            placeholder="Address"
+            multiline={true}
+            onChangeText={(text) => this.updateValue(text, 'address')}>
+            {this.state.query}
+          </TextInput>
+          </ScrollView>
+
           </View>
         </View>
         <View style={styles.validating_form_textfield_address}>
