@@ -28,7 +28,6 @@ export class ExistingCustomer extends Component {
       error_message_jars_picked: '',
       error_message_amount_paid: '',
       history_records: [],
-      hideAutoList:false,
     }
   }
   DatePickerMainFunctionCall = () => {
@@ -222,7 +221,20 @@ export class ExistingCustomer extends Component {
         var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
         var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
         var response1 = JSON.parse(newrecord);
-        const newRecord = {
+        let newRecord;
+        if (response1.rows.length == 0 && buttonUpdateDelete == 'delete') {
+          newRecord = {
+            majorDimension: 'ROWS',
+            values: [
+              [
+                date,
+                0,
+
+              ]
+            ]
+          };
+        }else{
+        newRecord = {
           majorDimension: 'ROWS',
           values: [
             [
@@ -232,6 +244,7 @@ export class ExistingCustomer extends Component {
             ]
           ]
         };
+      }
         return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A:B?key=' + API_key)
           .then((response) => response.json())
           .then((responseJson) => {
@@ -260,6 +273,8 @@ export class ExistingCustomer extends Component {
           });
       });
   }
+
+
 
   _onPressButton() {
     var name = this.state.query;
@@ -382,14 +397,12 @@ export class ExistingCustomer extends Component {
       jars_delivered: 0,
       jars_picked: 0,
       amount_paid: '',
-      hideAutoList:true,
     })
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:G?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
         var customer_records = responseJson.values;
         for (let i = 3; i < customer_records.length; i++) {
-
           if (customer_records[i][1] == date && customer_records[i][2] == name) {
             this.setState({
               jars_delivered: customer_records[i][3],
@@ -400,9 +413,7 @@ export class ExistingCustomer extends Component {
           }
         }
       });
-    }
-
-
+  }
   _onPressUpdateButton() {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:C?key=' + API_key)
       .then((response) => response.json())
@@ -420,11 +431,9 @@ export class ExistingCustomer extends Component {
             });
             break;
           }
-
         }
         console.log("CellNO3::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
-
           const newRecord = {
             majorDimension: 'ROWS',
             values: [
@@ -462,19 +471,14 @@ export class ExistingCustomer extends Component {
                   amount_paid: '',
                 });
                 ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-
               } else if (response.error.status == 'UNAUTHENTICATED') {
                 Alert.alert("Your session has expired please login again!!!")
               }
             });
         } else {
           Alert.alert("Name:" + this.state.query + " Date:" + date + " does not exists in sheet!!!");
-
         }
-
       });
-
-
   }
   _onPressDeleteButton() {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:D?key=' + API_key)
@@ -495,7 +499,6 @@ export class ExistingCustomer extends Component {
         console.log("CellNO::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
           const newRecord = {
-
             "requests": [
               {
                 "deleteDimension": {
@@ -510,7 +513,6 @@ export class ExistingCustomer extends Component {
             ]
 
           };
-
           var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + ':batchUpdate';
           fetch(url, {
             method: 'POST',
@@ -540,19 +542,14 @@ export class ExistingCustomer extends Component {
               } else if (response.error.status == 'UNAUTHENTICATED') {
                 Alert.alert("Your session has expired please login again!!!")
               }
-
-
             });
         } else {
           Alert.alert("Name:" + name + " Date:" + date + " does not exists in sheet!!!");
-
         }
       });
-
-
   }
   onViewPress() {
-    var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "'";
+    var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "'ORDER BY B DESC";
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
     console.log(URL)
@@ -610,19 +607,13 @@ export class ExistingCustomer extends Component {
           obj1["JarsDelivered"] = '';
           obj1["JarsPicked"] = '';
           obj1["AmountPaid"] = '';
-
           customer_records.push(obj1);
-
         }
         this.setState({
           history_records: customer_records,
-
         });
       })
-      .then((response) => {
-
-
-      })
+      .then((response) => { })
       .catch((error) => {
         console.error(error);
       });
@@ -658,8 +649,7 @@ export class ExistingCustomer extends Component {
               containerStyle={styles.autocompleteContainer}
               data={dataSource}
               defaultValue={query}
-              hideResults={this.state.hideAutoList}
-              onChangeText={text => this.setState({ query: text,hideAutoList:false,})}
+              onChangeText={text => this.setState({ query: text })}
               placeholder="Please enter name"
               renderItem={({ name }) => (
                 <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, this.state.DateText)}>
@@ -670,7 +660,6 @@ export class ExistingCustomer extends Component {
               )}
             />
           </View>
-
         </View>
         <View style={styles.validating_form_textfield_name}>
           <Text style={styles.error_message_Text}>{this.state.error_message_name}</Text>
