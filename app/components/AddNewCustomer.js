@@ -21,12 +21,12 @@ export class AddNewCustomer extends Component {
       error_message_phoneno: '',
       error_message_total: '',
       is_phone_registered: false,
-      deposit_paid: '',
+      deposit_paid: 'No',
       total: '',
       query: "",
       hideAutoList:false,
     }
-    this.onSelect = this.onSelect.bind(this)
+    this.onSelect = this.onSelect.bind(this);
   }
   componentDidMount() {
     RNGooglePlaces.getCurrentPlace()
