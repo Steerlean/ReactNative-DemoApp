@@ -21,7 +21,7 @@ export class ExistingCustomer extends Component {
       dataSource: [],
       jars_delivered: 0,
       jars_picked: 0,
-      amount_paid: '',
+      amount_paid: 0,
       query: '',
       error_message_name: '',
       error_message_jars_delivered: '',
@@ -288,7 +288,7 @@ export class ExistingCustomer extends Component {
     var is_amount_paid_field_empty = false;
     let reg_ex = /^[0-9]+$/;
 
-    if (name == "" || name == "Select Name") {
+    if (name == "") {
 
       is_customername_field_empty = true;
     }
@@ -332,6 +332,14 @@ export class ExistingCustomer extends Component {
         error_message_jars_picked: 'Please enter valid no. of jars picked',
       });
     }
+    if (amount_paid == 0) {
+      is_amount_paid_field_empty = true;
+    }
+    if (is_amount_paid_field_empty) {
+      this.setState({
+        error_message_amount_paid: "Please enter valid amount.",
+      });
+    } else {
     if (reg_ex.test(amount_paid)) {
       is_amount_paid_field_empty = false;
       this.setState({
@@ -343,6 +351,7 @@ export class ExistingCustomer extends Component {
         error_message_amount_paid: 'Please enter valid amount.',
       });
     }
+  }
     if (is_customername_field_empty == false && is_jars_delivered_field_empty == false && is_jars_picked_field_empty == false && is_amount_paid_field_empty == false) {
 
 
@@ -382,7 +391,7 @@ export class ExistingCustomer extends Component {
               query: '',
               jars_delivered: 0,
               jars_picked: 0,
-              amount_paid: '',
+              amount_paid: 0,
             });
             ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
           } else if (response.error.status == 'UNAUTHENTICATED') {
@@ -397,7 +406,7 @@ export class ExistingCustomer extends Component {
       query: name,
       jars_delivered: 0,
       jars_picked: 0,
-      amount_paid: '',
+      amount_paid: 0,
       hideAutoList:true,
     })
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:G?key=' + API_key)
@@ -470,7 +479,7 @@ export class ExistingCustomer extends Component {
                   query: '',
                   jars_delivered: 0,
                   jars_picked: 0,
-                  amount_paid: '',
+                  amount_paid: 0,
                 });
                 ToastAndroid.showWithGravity('Customer updated successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
               } else if (response.error.status == 'UNAUTHENTICATED') {
@@ -538,7 +547,7 @@ export class ExistingCustomer extends Component {
                   query: '',
                   jars_delivered: 0,
                   jars_picked: 0,
-                  amount_paid: '',
+                  amount_paid: 0,
                 });
                 ToastAndroid.showWithGravity('Customer deleted successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
               } else if (response.error.status == 'UNAUTHENTICATED') {
