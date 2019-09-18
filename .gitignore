@@ -35,7 +35,8 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
-
+Release_Properties.js
+Test_Properties.js
 # BUCK
 buck-out/
 \.buckd/
