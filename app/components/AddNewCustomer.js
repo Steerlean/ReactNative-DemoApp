@@ -29,15 +29,15 @@ export class AddNewCustomer extends Component {
     this.onSelect = this.onSelect.bind(this);
   }
   componentDidMount() {
-    RNGooglePlaces.getCurrentPlace()
-    .then((results) => {
-      console.log('Current Location:',results);
-      this.setState({
-        query:results[0].name.replace(/\(|\)/g,'')
-      });
-      console.log('Current Location string:',this.state.query);
-  })
-    .catch((error) => console.log(error.message));
+  //   RNGooglePlaces.getCurrentPlace()
+  //   .then((results) => {
+  //     console.log('Current Location:',results);
+  //     this.setState({
+  //       query:results[0].name.replace(/\(|\)/g,'')
+  //     });
+  //     console.log('Current Location string:',this.state.query);
+  // })
+  //   .catch((error) => console.log(error.message));
   }
   onSelect(index, value) {
     this.setState({

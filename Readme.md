@@ -5,7 +5,7 @@
         B) Then to run the app go to Project root directory and run following command:
         	react-native run-android
     2.on real device please run following command on terminal:
-    	A) To start development server go to Project root directory and run foolowing command:
+    	A) To start development server go to Project root directory and run following command:
         	npm start
         B) Then to run the app go to Project root directory and run following command:
         	react-native run-android  
