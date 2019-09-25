@@ -3,28 +3,34 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "googleapis": "^32.0.0",
+    "googleapis": "^43.0.0",
+    "handlebars": "^4.3.1",
     "moment": "^2.22.2",
-    "react": "16.4.1",
+    "react": "^16.8.6",
     "react-moment": "^0.7.9",
-    "react-native": "0.56.0",
-    "react-native-autocomplete-input": "^3.5.0",
+    "react-native": "^0.60.5",
+    "react-native-autocomplete-input": "^4.0.0",
     "react-native-datepicker-dialog": "0.0.9",
     "react-native-flexi-radio-button": "^0.2.2",
-    "react-native-google-places": "^2.5.2",
-    "react-native-google-signin": "^0.12.0",
+    "react-native-google-places": "^3.1.2",
+    "react-native-google-signin": "^2.0.0",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-navigation": "^2.7.0"
   },
   "devDependencies": {
-    "babel-jest": "23.4.0",
-    "babel-preset-react-native": "^5",
-    "jest": "23.4.1",
-    "react-test-renderer": "16.4.1"
+    "@babel/core": "^7.5.5",
+    "@babel/runtime": "^7.5.5",
+    "@react-native-community/eslint-config": "^0.0.5",
+    "babel-jest": "^24.8.0",
+    "eslint": "^6.1.0",
+    "jest": "^24.8.0",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "react-test-renderer": "16.8.6"
   },
   "jest": {
     "preset": "react-native"

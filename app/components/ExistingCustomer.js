@@ -77,7 +77,7 @@ export class ExistingCustomer extends Component {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details!B3%3AB?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
+        console.log('Customer Data response:',responseJson);
         this.setState({
           dataSource: responseJson.values,
         }, function () { });
@@ -98,10 +98,10 @@ export class ExistingCustomer extends Component {
         dataSource2.push(obj);
       }
     }
+    // console.log('query:',query);
     const regex = new RegExp(`${query.trim()}`, 'i');
-    return dataSource2.filter((text) =>
-      text.name.search(regex) >= 0
-    );
+    // console.log('regex:',regex);
+    return dataSource2.filter((text) => text.name.search(regex) >= 0 );
   }
   _POST_REQUEST(newRecord) {
     var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A:B:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
@@ -537,7 +537,7 @@ export class ExistingCustomer extends Component {
             .catch(error => console.error('Error:', error))
             .then((response) => {
               if (response.replies != null) {
-                console.log('Success:', response);
+                // console.log('Success:', response);
                 var date = this.state.DateText;
                 var deLete = 'delete';
                 this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_PUT(date, deLete);
@@ -563,14 +563,14 @@ export class ExistingCustomer extends Component {
     var SQL_QUERY = "SELECT B,C,D,E,F WHERE A = '" + this.props.username + "'ORDER BY B DESC";
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
-    console.log(URL)
+    // console.log(URL);
     fetch(URL)
-      .then((response) => {
-        var ResponseObjectnew = response._bodyText;
+      .then(async (response) => {
+        var ResponseObjectnew = await (new Response(response._bodyBlob)).text();
         var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
         var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
         var response1 = JSON.parse(newrecord);
-        console.log(response1);
+        // console.log(response1);
         const customer_records = [];
         if (!response1.rows.length == 0) {
           for (let i = 0; i < response1.rows.length; i++) {
@@ -663,13 +663,14 @@ export class ExistingCustomer extends Component {
               hideResults={this.state.hideAutoList}
               onChangeText={text => this.setState({ query: text,hideAutoList:false})}
               placeholder="Please enter name"
-              renderItem={({ name }) => (
+              renderItem={({ name,i }) => (
                 <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, this.state.DateText)}>
                   <Text style={styles.itemText}>
                     {name}
                   </Text>
                 </TouchableOpacity>
               )}
+              keyExtractor={(name, index) => index.toString()}
             />
           </View>
         </View>

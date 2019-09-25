@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
 import { spreadsheet_ID, API_key } from '../../Test_Properties';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
-import RNGooglePlaces from 'react-native-google-places';
+//import RNGooglePlaces from 'react-native-google-places';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:

@@ -16,19 +16,19 @@ export class HomeScreen extends React.Component {
     };
   }
   componentDidMount() {
-    GoogleSignin.hasPlayServices({ autoResolve: true })
+    GoogleSignin.hasPlayServices({ autoResolve: true,showPlayServicesUpdateDialog: true })
       .then(() => {
+        console.log('Play Services present on device.');
       })
-      .catch(errr => {
+      .catch(err => {
         console.log('Play services error', err.code, err.message);
       })
 
     GoogleSignin.configure({
       scopes: ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets"], // what API you want to access on behalf of the user, default is email and profile
-
       webClientId: Web_CLient_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
-
-    }).then(() => { });
+      offlineAccess: true
+    });
   }
 
   handleRequestForAllAuthorizedEmailList(email) {
@@ -53,17 +53,20 @@ export class HomeScreen extends React.Component {
   googleLogin() {
     GoogleSignin.signOut().then(() => {
       GoogleSignin.signIn().then((user) => {
-        console.log(user);
-        this.handleRequestForAllAuthorizedEmailList(user.email).then(() => {
+        console.log('Response:',user);
+        this.handleRequestForAllAuthorizedEmailList(user.user.email).then(() => {
           if (this.state.is_email_registered == true) {
-            var userName = user.name;
-            var accessToken = user.accessToken;
+            var userName = user.user.name;
             console.log(user);
-            this.setState({ user: user });
-            ToastAndroid.showWithGravity('You are logged in as ' + user.name, ToastAndroid.LONG, ToastAndroid.CENTER);
-            this.props.navigation.navigate('Details', { username: userName, accesstoken: accessToken })
+            this.setState({ user: user.user });
+            ToastAndroid.showWithGravity('You are logged in as ' + user.user.name, ToastAndroid.LONG, ToastAndroid.CENTER);
             this.setState({
               is_email_registered: false,
+            })
+            var accessToken = '';
+            GoogleSignin.getTokens().then((tokenResponse) => {
+              console.log('tokenResponse:',tokenResponse);
+              this.props.navigation.navigate('Details', { username: userName, accesstoken: tokenResponse.accessToken })
             })
           } else {
             alert("You dont have permissions to access this app!!");
