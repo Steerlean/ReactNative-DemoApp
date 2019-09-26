@@ -14,7 +14,7 @@
     "react": "^16.8.6",
     "react-moment": "^0.7.9",
     "react-native": "^0.60.5",
-    "react-native-autocomplete-input": "^4.0.0",
+    "react-native-autocomplete-input": "^4.1.0",
     "react-native-datepicker-dialog": "0.0.9",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-google-places": "^3.1.2",

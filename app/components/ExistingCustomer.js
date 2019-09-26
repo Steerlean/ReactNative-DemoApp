@@ -663,10 +663,10 @@ export class ExistingCustomer extends Component {
               hideResults={this.state.hideAutoList}
               onChangeText={text => this.setState({ query: text,hideAutoList:false})}
               placeholder="Please enter name"
-              renderItem={({ name,i }) => (
-                <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(name, this.state.DateText)}>
+              renderItem={({ item,i }) => (
+                <TouchableOpacity onPress={() => this._GET_REQUEST_to_get_allcustomerrecords_DeliverySheet(item.name, this.state.DateText)}>
                   <Text style={styles.itemText}>
-                    {name}
+                    {item.name}
                   </Text>
                 </TouchableOpacity>
               )}
