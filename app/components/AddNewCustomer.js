@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
+import { Platform, Text, View, TextInput, Button, Alert, Keyboard, ToastAndroid, ScrollView, TouchableOpacity } from 'react-native';
 import { spreadsheet_ID, API_key } from '../../Test_Properties';
 import { RadioGroup, RadioButton } from 'react-native-flexi-radio-button';
-//import RNGooglePlaces from 'react-native-google-places';
+import { styles } from '../Styles/AddNewCustomerStyles';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -23,22 +24,14 @@ export class AddNewCustomer extends Component {
       is_phone_registered: false,
       deposit_paid: 'No',
       total: '',
-      query: "",
+      query: '',
       hideAutoList:false,
     }
     this.onSelect = this.onSelect.bind(this);
   }
-  componentDidMount() {
-  //   RNGooglePlaces.getCurrentPlace()
-  //   .then((results) => {
-  //     console.log('Current Location:',results);
-  //     this.setState({
-  //       query:results[0].name.replace(/\(|\)/g,'')
-  //     });
-  //     console.log('Current Location string:',this.state.query);
-  // })
-  //   .catch((error) => console.log(error.message));
-  }
+  
+  componentDidMount() {}
+
   onSelect(index, value) {
     this.setState({
       deposit_paid: `${value}`,
@@ -174,11 +167,12 @@ export class AddNewCustomer extends Component {
               .then((response) => {
                 if (response.updates != null) {
                   ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-                  console.log('Success:', response);
+                  // console.log('Success:', response);
                   this.setState({
                     name: '',
                     phoneno: '',
                     total: '',
+                    query: '',
                     hideAutoList:false
                   });
                 } else if (response.error.status == 'UNAUTHENTICATED') {
@@ -295,87 +289,7 @@ export class AddNewCustomer extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 80,
-    paddingLeft: 20,
-    paddingRight: 20,
-    alignItems: 'center',
-    alignSelf: 'stretch'
-  },
-  header: {
-    fontSize: 800,
-    marginBottom: 40,
-    marginLeft: 40,
-    color: 'black',
-    borderBottomColor: 'darkgrey',
-    borderBottomWidth: 1,
-    paddingBottom: 20,
-    fontWeight: 'bold',
-  },
-  buttonSubmit: {
-    marginTop: 10,
-    height: 40,
-    width: 100,
-    alignItems: 'center',
-    backgroundColor: '#841584'
-  },
-  buttonText: {
-    color: 'white',
-    padding: 10
-  },
-  label: {
-    fontSize: 20,
-    width: 100,
-    height: 50,
-    marginLeft: 20,
-    marginTop: 13,
-  },
 
-  textInput: {
-    width: 200,
-    height: 50,
-    borderBottomColor: 'darkgrey',
-    borderBottomWidth: 1,
-    alignSelf: 'stretch',
-  },
-  error_message_Text: {
-    color: 'red',
-    marginLeft: 10,
-  },
-  validating_form_textfield_name: {
-    marginLeft: 30,
-  },
-  validating_form_textfield_address: {
-    marginLeft: 40,
-  },
-  validating_form_textfield_phone: {
-    marginLeft: 80,
-  },
-  validating_form_textfield_total: {
-    marginLeft: 80,
-  },
-  container_radio: {
-    marginTop: 40,
-
-  },
-  text_radio: {
-    padding: 10,
-    fontSize: 14,
-  },
-  autocompleteContainer: {
-    flex: 1,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 1,
-  },
-  itemText: {
-    fontSize: 15,
-    margin: 2
-  }
-});
 
 
 

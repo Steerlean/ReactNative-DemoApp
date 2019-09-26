@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native';
+import { Platform, Text, View, TextInput, Button, Alert } from 'react-native';
 import { AddNewCustomer } from './AddNewCustomer';
 import { ExistingCustomer } from './ExistingCustomer';
+import { styles } from '../Styles/CustomerStyles';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -88,27 +90,4 @@ export class Customer extends Component {
     }
   }
 }
-
-const styles = StyleSheet.create({
-  buttonTabsContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-    paddingTop: 14,
-  },
-  buttonTab: {
-    flex: 1,
-  },
-  container: {
-    flex: 80,
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    paddingLeft: 20,
-    paddingRight: 20,
-    alignItems: 'center',
-    alignSelf: 'stretch'
-  },
-});
 
