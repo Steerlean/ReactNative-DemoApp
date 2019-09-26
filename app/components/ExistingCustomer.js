@@ -77,7 +77,7 @@ export class ExistingCustomer extends Component {
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Customer_Details!B3%3AB?key=' + API_key)
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log('Customer Data response:',responseJson);
+        // console.log('Customer Data response:',responseJson);
         this.setState({
           dataSource: responseJson.values,
         }, function () { });
@@ -98,9 +98,7 @@ export class ExistingCustomer extends Component {
         dataSource2.push(obj);
       }
     }
-    // console.log('query:',query);
     const regex = new RegExp(`${query.trim()}`, 'i');
-    // console.log('regex:',regex);
     return dataSource2.filter((text) => text.name.search(regex) >= 0 );
   }
   _POST_REQUEST(newRecord) {
@@ -116,7 +114,7 @@ export class ExistingCustomer extends Component {
       .catch(error => console.error('Error:', error))
       .then((response) => {
         if (response.updates != null) {
-          console.log('Success:', response);
+          // console.log('Success:', response);
         } else if (response.error.status == 'UNAUTHENTICATED') {
           Alert.alert("Your session has expired please login again!!!")
         }
@@ -125,7 +123,7 @@ export class ExistingCustomer extends Component {
   }
   _PUT_REQUEST(newRecord) {
     var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Shadab_Jeetu!A' + this.state.cellNo + '%3AB' + this.state.cellNo + '?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CupdatedCells%2CupdatedColumns%2CupdatedData%2CupdatedRange%2CupdatedRows&key=' + API_key;
-    console.log("URL", url);
+    // console.log("URL", url);
     fetch(url, {
       method: 'PUT',
       body: JSON.stringify(newRecord),
@@ -137,7 +135,7 @@ export class ExistingCustomer extends Component {
       .catch(error => console.error('Error:', error))
       .then((response) => {
         if (response.updates != null) {
-          console.log('Success:', response);
+          // console.log('Success:', response);
         } else if (response.error.status == 'UNAUTHENTICATED') {
           Alert.alert("Your session has expired please login again!!!")
         }
@@ -151,8 +149,8 @@ export class ExistingCustomer extends Component {
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
     fetch(URL)
-      .then((response) => {
-        var ResponseObjectnew = response._bodyText;
+      .then(async (response) => {
+        var ResponseObjectnew = await (new Response(response._bodyBlob)).text();
         var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
         var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
         var response1 = JSON.parse(newrecord);
@@ -185,7 +183,7 @@ export class ExistingCustomer extends Component {
           .then((response) => response.json())
           .then((responseJson) => {
             var customer_records = responseJson.values;
-            console.log("CUSTOMER_RECORDS::", customer_records);
+            // console.log("CUSTOMER_RECORDS::", customer_records);
             if (typeof customer_records === 'undefined') {
               this._POST_REQUEST(newRecord);
             } else {
@@ -200,9 +198,9 @@ export class ExistingCustomer extends Component {
                   break;
                 }
               }
-              console.log("CellNoSubmit::", this.state.cellNo);
+              // console.log("CellNoSubmit::", this.state.cellNo);
             }
-            console.log("NewRecordNOTNULL::", newRecord);
+            // console.log("NewRecordNOTNULL::", newRecord);
             if (this.state.cellNo == '') {
               this._POST_REQUEST(newRecord);
             }
@@ -217,8 +215,8 @@ export class ExistingCustomer extends Component {
     var ENCODED_SQL_QUERY = encodeURI(SQL_QUERY);
     var URL = 'https://docs.google.com/spreadsheets/d/' + spreadsheet_ID + '/gviz/tq?gid=' + sheet_ID_GID + '&headers=1&tq=' + ENCODED_SQL_QUERY;
     fetch(URL)
-      .then((response) => {
-        var ResponseObjectnew = response._bodyText;
+      .then(async (response) => {
+        var ResponseObjectnew = await (new Response(response._bodyBlob)).text();
         var newrecord1 = ResponseObjectnew.substring(ResponseObjectnew.indexOf("(") + 1, ResponseObjectnew.lastIndexOf(")"));
         var newrecord = "{" + newrecord1.substring((newrecord1.indexOf("rows") - 1), newrecord1.lastIndexOf("]") + 1) + "}";
         var response1 = JSON.parse(newrecord);
@@ -264,7 +262,7 @@ export class ExistingCustomer extends Component {
                   break;
                 }
               }
-              console.log("CellNoSubmit::", this.state.cellNo);
+              // console.log("CellNoSubmit::", this.state.cellNo);
             }
             if (!this.state.cellNo == '') {
               this._PUT_REQUEST(newRecord);
@@ -368,7 +366,7 @@ export class ExistingCustomer extends Component {
           ]
         ]
       };
-      console.log(newRecord)
+      // console.log(newRecord)
       var url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/Delivery!A:F:append?includeValuesInResponse=true&insertDataOption=INSERT_ROWS&responseDateTimeRenderOption=SERIAL_NUMBER&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED&fields=spreadsheetId%2CtableRange%2Cupdates&key=' + API_key;
 
       console.log(url)
@@ -383,7 +381,7 @@ export class ExistingCustomer extends Component {
         .catch(error => console.error('Error:', error))
         .then((response) => {
           if (response.updates != null) {
-            console.log('Success:', response);
+            // console.log('Success:', response);
             var date = this.state.DateText;
             this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_POST(date);
             this.setState({
@@ -443,7 +441,7 @@ export class ExistingCustomer extends Component {
             break;
           }
         }
-        console.log("CellNO3::" + this.state.cellNo)
+        // console.log("CellNO3::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
           const newRecord = {
             majorDimension: 'ROWS',
@@ -467,9 +465,8 @@ export class ExistingCustomer extends Component {
             .then(response => response.json())
             .catch(error => console.error('Error:', error))
             .then((response) => {
-              console.log(response)
               if (response.updatedRows != null) {
-                console.log('Success:', response);
+                // console.log('Success:', response);
                 var date = this.state.DateText;
                 var update = "update";
                 this._GET_REQUEST_to_get_sumOfJarsDelivered_Shadab_JeetuSheet_PUT(date, update);
@@ -498,7 +495,7 @@ export class ExistingCustomer extends Component {
         var name = "" + this.state.query;
         var date = this.state.DateText;
         var customer_records = responseJson.values;
-        console.log(customer_records)
+        // console.log(customer_records);
         for (let i = 3; i < customer_records.length; i++) {
           if (customer_records[i][1] == date && customer_records[i][2] == name) {
             this.setState({
@@ -507,7 +504,7 @@ export class ExistingCustomer extends Component {
             break;
           }
         }
-        console.log("CellNO::" + this.state.cellNo)
+        // console.log("CellNO::" + this.state.cellNo)
         if (!this.state.cellNo == '') {
           const newRecord = {
             "requests": [
