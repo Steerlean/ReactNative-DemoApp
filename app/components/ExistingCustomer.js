@@ -742,6 +742,7 @@ export class ExistingCustomer extends Component {
               data={this.state.history_records}
               renderItem={({ item }) => <Text style={styles.item}>{item.Date}  {item.Name}  {item.JarsDelivered}  {item.JarsPicked}  {item.AmountPaid}</Text>}
               ItemSeparatorComponent={() => <View style={{ width: 1, height: 1, backgroundColor: '' }} />}
+              keyExtractor={(item, index) => index.toString()}
             />
           </ScrollView>
         </View>
