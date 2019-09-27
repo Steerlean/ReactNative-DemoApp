@@ -25,19 +25,14 @@ export class AddNewCustomer extends Component {
       deposit_paid: 'No',
       total: '',
       query: '',
-      hideAutoList:false,
     }
     this.onSelect = this.onSelect.bind(this);
   }
-  
-  componentDidMount() {}
-
   onSelect(index, value) {
     this.setState({
       deposit_paid: `${value}`,
     })
   }
-
   handleRequestForAllUniquePhoneNo(phone_no) {
     this.setState({ is_phone_registered: false, })
     return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheet_ID + '/values/!C2%3AC?key=' + API_key)
@@ -64,13 +59,10 @@ export class AddNewCustomer extends Component {
         name: text,
       })
     } else if (field == 'address') {
-
       this.setState({
         query: text,
       })
-
     } else if (field == 'phoneno') {
-
       this.setState({
         phoneno: text,
       })
@@ -90,7 +82,6 @@ export class AddNewCustomer extends Component {
     var is_customeraddress_field_empty = false;
     var is_customerphoneno_field_empty = false;
     var is_customertotal_field_empty = false;
-
     if (name == '') {
       is_customername_field_empty = true;
       this.setState({
@@ -130,7 +121,6 @@ export class AddNewCustomer extends Component {
           error_message_phoneno: 'Please enter valid phoneno',
         });
       }
-
       this.handleRequestForAllUniquePhoneNo(phoneno).then(() => {
         if (this.state.is_phone_registered == true) {
           this.setState({
@@ -167,13 +157,11 @@ export class AddNewCustomer extends Component {
               .then((response) => {
                 if (response.updates != null) {
                   ToastAndroid.showWithGravity('Customer added successfully.', ToastAndroid.LONG, ToastAndroid.CENTER);
-                  // console.log('Success:', response);
                   this.setState({
                     name: '',
                     phoneno: '',
                     total: '',
                     query: '',
-                    hideAutoList:false
                   });
                 } else if (response.error.status == 'UNAUTHENTICATED') {
                   Alert.alert("Your session has expired please login again!!!")
@@ -196,9 +184,7 @@ export class AddNewCustomer extends Component {
       });
     }
   }
-  
-  render() {
-
+render() {
     return (
       <View style={styles.container}>
         <Text styles={styles.header}>ADD NEW CUSTOMER</Text>
@@ -218,15 +204,13 @@ export class AddNewCustomer extends Component {
           <View style={styles.label}><Text>Address</Text></View>
           <View style={styles.textInput}>
           <ScrollView>
-
-          <TextInput
+            <TextInput
             placeholder="Address"
             multiline={true}
             onChangeText={(text) => this.updateValue(text, 'address')}>
             {this.state.query}
           </TextInput>
           </ScrollView>
-
           </View>
         </View>
         <View style={styles.validating_form_textfield_address}>
@@ -234,7 +218,8 @@ export class AddNewCustomer extends Component {
         </View>
         <View style={{ flexDirection: 'row' }}  >
           <View style={styles.label}><Text>Phone</Text></View>
-          <View style={styles.textInput}><TextInput
+          <View style={styles.textInput}>
+          <TextInput
             placeholder="PhoneNo"
             onChangeText={(text) => this.updateValue(text, 'phoneno')}
             keyboardType="number-pad">
@@ -264,14 +249,10 @@ export class AddNewCustomer extends Component {
               thickness={2}
               selectedIndex={1}
               onSelect={(index, value) => this.onSelect(index, value)}>
-              <RadioButton
-                value='Yes'
-                color='black'>
+              <RadioButton value='Yes' color='black'>
                 <Text>Yes</Text>
               </RadioButton>
-              <RadioButton
-                value='No'
-                color='black'>
+              <RadioButton value='No' color='black'>
                 <Text>No</Text>
               </RadioButton>
             </RadioGroup>
